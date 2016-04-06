@@ -1,5 +1,6 @@
 package org.tont.core.netty.gateway;
 
+import org.tont.core.disruptor.GatewayDispatchEventHandler;
 import org.tont.core.disruptor.MessageDispatcher;
 import org.tont.core.gateway.GatewayGatherer;
 import org.tont.core.netty.NettyServer;
@@ -33,6 +34,7 @@ public class Gateway extends NettyServer{
 	@Override
 	public void run() {
 		try {
+			dispatcher.init(new GatewayDispatchEventHandler());
 			startTime = System.currentTimeMillis();
 			Gateway.Gatherer().startDataAnalyse();
 			this.bind(initializer);

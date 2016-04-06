@@ -14,7 +14,11 @@ import org.tont.util.ConstantUtil;
 public class GatewayDispatchHandler extends ChannelInboundHandlerAdapter {
 	
 	private final String CLOSE = ConstantUtil.CLOSE;
-	private final String MARKET = "MarketServerChannel";
+	public final String GATEWAY = ConstantUtil.GATEWAY;
+	public final String MARKET = ConstantUtil.MARKET;
+	public final String BATTLE = ConstantUtil.BATTLE;
+	public final String SCENE = ConstantUtil.SCENE;
+	
 	private SessionPoolImp sessionPool;
 	
 	public GatewayDispatchHandler(SessionPoolImp sessionPool) {
@@ -37,10 +41,30 @@ public class GatewayDispatchHandler extends ChannelInboundHandlerAdapter {
 			case 100:	//注册登录等直接由网关处理的请求
 				Gateway.Dispatcher().onData(msgEntity);
 				break;
-			case 200:	//市场交易请求
+				
+			case 200:
+				//战斗数据
+				Gateway.Gatherer().handleRequest();
+				ServerChannelManager.getChannel(BATTLE).writeAndFlush(msgEntity);
+				break;
+				
+			case 300:	//市场交易数据
 				Gateway.Gatherer().handleRequest();
 				ServerChannelManager.getChannel(MARKET).writeAndFlush(msgEntity);
 				break;
+				
+			case 400:
+				//场景数据
+				Gateway.Gatherer().handleRequest();
+				ServerChannelManager.getChannel(SCENE).writeAndFlush(msgEntity);
+				break;
+				
+			case 500:
+				//角色数据
+				Gateway.Gatherer().handleRequest();
+				ServerChannelManager.getChannel(SCENE).writeAndFlush(msgEntity);
+				break;
+				
 			default:
 				break;
 		}

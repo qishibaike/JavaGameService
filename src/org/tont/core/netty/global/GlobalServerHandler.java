@@ -42,6 +42,14 @@ public class GlobalServerHandler extends ChannelInboundHandlerAdapter {
 			case 87:
 				frame.noticeMarketPanel(ctx.channel().remoteAddress(), entity);
 				break;
+				
+			case 88:
+				//场景服务器
+				break;
+				
+			case 89:
+				//战斗服务器
+				break;
 	
 			default:
 				break;

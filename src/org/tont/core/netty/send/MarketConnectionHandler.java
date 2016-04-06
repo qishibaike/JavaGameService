@@ -9,6 +9,7 @@ import org.tont.proto.GameMsgEntity;
 
 import io.netty.channel.ChannelHandler.Sharable;
 
+// 网关->市场服务器	之间连接的处理器
 @Sharable
 public class MarketConnectionHandler extends ChannelInboundHandlerAdapter {
 	
@@ -22,8 +23,7 @@ public class MarketConnectionHandler extends ChannelInboundHandlerAdapter {
 	public void channelRead(ChannelHandlerContext ctx, Object msg)
 			throws Exception {
 		GameMsgEntity msgEntity = (GameMsgEntity) msg;
-		//GameMessage.PlayerAccountInfo info = GameMessage.PlayerAccountInfo.parseFrom(msgEntity.getData());
-		Gateway.getSessionPool().findSession(1).getChannel().writeAndFlush(msgEntity);
+		Gateway.getSessionPool().findSession(msgEntity.getPid()).getChannel().writeAndFlush(msgEntity);
 	}
 
 }

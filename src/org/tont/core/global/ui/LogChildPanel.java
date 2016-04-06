@@ -31,9 +31,7 @@ public class LogChildPanel extends JPanel {
 		logWin.getDocument().addDocumentListener(new DocumentListener(){
 
 			@Override
-			public void changedUpdate(DocumentEvent e) {
-			// TODO Auto-generated method stub
-			}
+			public void changedUpdate(DocumentEvent e) {}
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
@@ -41,24 +39,24 @@ public class LogChildPanel extends JPanel {
 					
 					@Override
 					public void run() {
-						if (logWin.getLineCount() >= 10) {
+						if (logWin.getLineCount() >= 100) {
 					        int end = 0;
 					        try {
-					        	end = logWin.getLineEndOffset(5);
+					        	end = logWin.getLineEndOffset(10);
 					        } catch (Exception e1) {
 					        }
 					        logWin.replaceRange("", 0, end);
 						}
 					}
+					
 				});
 				
 				logWin.setCaretPosition(logWin.getText().length());
 			}
 
 			@Override
-			public void removeUpdate(DocumentEvent e) {
-			// TODO Auto-generated method stub
-			}
+			public void removeUpdate(DocumentEvent e) {}
+			
 			});
 		this.setBorder(BorderFactory.createTitledBorder(title));
 		JScrollPane scroll = new JScrollPane(logWin);
