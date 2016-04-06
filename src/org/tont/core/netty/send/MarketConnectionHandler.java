@@ -7,20 +7,23 @@ import org.tont.core.netty.ServerChannelManager;
 import org.tont.core.netty.gateway.Gateway;
 import org.tont.proto.GameMsgEntity;
 
+import io.netty.channel.ChannelHandler.Sharable;
+
+// ç½‘å…³->å¸‚åœºæœåŠ¡å™¨	ä¹‹é—´è¿æ¥çš„å¤„ç†å™¨
+@Sharable
 public class MarketConnectionHandler extends ChannelInboundHandlerAdapter {
 	
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		ServerChannelManager.putChannel("MarketServerChannel", ctx.channel());
-		System.out.println("ÒÑÓëÊĞ³¡·şÎñÆ÷½¨Á¢Á¬½Ó");
+		System.out.println("æˆåŠŸè¿æ¥è‡³å¸‚åœºäº¤æ˜“æœåŠ¡å™¨");
 	}
 	
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg)
 			throws Exception {
 		GameMsgEntity msgEntity = (GameMsgEntity) msg;
-		//GameMessage.PlayerAccountInfo info = GameMessage.PlayerAccountInfo.parseFrom(msgEntity.getData());
-		Gateway.getSessionPool().findSession(1).getChannel().writeAndFlush(msgEntity);
+		Gateway.getSessionPool().findSession(msgEntity.getPid()).getChannel().writeAndFlush(msgEntity);
 	}
 
 }

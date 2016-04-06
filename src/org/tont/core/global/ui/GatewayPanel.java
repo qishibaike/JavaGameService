@@ -7,6 +7,8 @@ import java.awt.Insets;
 
 import javax.swing.JPanel;
 
+import org.tont.proto.ServerReport;
+
 public class GatewayPanel extends JPanel {
 
 	private static final long serialVersionUID = 18828486362329417L;
@@ -16,7 +18,7 @@ public class GatewayPanel extends JPanel {
 	
 	public GatewayPanel() {
 		
-		//ÉèÖÃ²¼¾Ö
+		//é¢æ¿å¸ƒå±€
 		gridBagLayout = new GridBagLayout();
         gridBagLayout.columnWidths = new int[] { 0, 0};
         gridBagLayout.rowHeights = new int[] { 0 };
@@ -25,7 +27,7 @@ public class GatewayPanel extends JPanel {
         this.setLayout(gridBagLayout);
         
         
-        //Ìí¼Ó¿Ø¼ş
+        //å­é¢æ¿
         {
         	hardwarePanel = new HardwarePanel();
         	hardwarePanel.setPreferredSize(new Dimension(430, 480));
@@ -48,6 +50,11 @@ public class GatewayPanel extends JPanel {
             constraints.gridwidth = 1;
             add(businessPanel, constraints);
         }
+	}
+	
+	public void notice(ServerReport.ServerReportEntity report) {
+		hardwarePanel.notice(report);
+		businessPanel.notice(report);
 	}
 
 }

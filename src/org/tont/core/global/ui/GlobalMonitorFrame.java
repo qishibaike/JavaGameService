@@ -3,6 +3,8 @@ package org.tont.core.global.ui;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
+import java.net.SocketAddress;
+import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -13,6 +15,7 @@ import org.tont.core.netty.global.GlobalChannelInitializer;
 import org.tont.core.netty.global.GlobalServer;
 import org.tont.core.netty.global.GlobalServerHandler;
 import org.tont.exceptions.ConfigParseException;
+import org.tont.proto.ServerReport;
 
 public class GlobalMonitorFrame extends JFrame {
 
@@ -20,33 +23,54 @@ public class GlobalMonitorFrame extends JFrame {
 	public GlobalServer server;
 	public Thread serverThread;
 	private JTabbedPane tabbed;
-	private JPanel gatewayPanel;
+	public HashMap<SocketAddress, JPanel> pannelMap = new HashMap<SocketAddress,JPanel>();
 
 	public GlobalMonitorFrame() {
 		super("Global Monitor");
 		UIStyleMgr.initUIStyle();
 		
 		tabbed = new JTabbedPane(JTabbedPane.TOP);
-		gatewayPanel = new GatewayPanel();
-		tabbed.add("  Íø¹Ø   ", gatewayPanel);
 		
 		JPanel view = new JPanel();
 		view.setBorder(new EmptyBorder(10, 0, 0, 0));
 		view.add(tabbed);
 		this.add(view);
 		
-		//´°¿ÚÉèÖÃ
+		//è®¾ç½®çª—å£å±æ€§
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.setSize(960, 600);
 		this.setInitPosition_Center();
 		this.setResizable(false);
 		this.setVisible(true);
 		
-		//Æô¶¯¼àÌıÏß³Ì
+		//å¯åŠ¨ç›‘å¬çº¿ç¨‹
 		this.startListener();
 	}
 	
-	//³õÊ¼»¯´°¿ÚµÄ³õÊ¼Î»ÖÃ£¬ÉèÎªÆÁÄ»ÖĞĞÄ
+	public void removeDisconnectPanel(SocketAddress addr) {
+		if (pannelMap.get(addr) != null) {
+			tabbed.remove(pannelMap.get(addr));
+			pannelMap.remove(addr);
+		}
+	}
+	
+	public void noticeGatewayPanel(SocketAddress addr, ServerReport.ServerReportEntity report) {
+		if (pannelMap.get(addr) == null) {
+			JPanel pannel = new GatewayPanel();
+			pannelMap.put(addr, pannel);
+			tabbed.add(" ç½‘å…³æœåŠ¡å™¨ ", pannel);
+		} else {
+			((GatewayPanel)pannelMap.get(addr)).notice(report);
+		}
+	}
+	
+	public void noticeMarketPanel(SocketAddress addr, ServerReport.ServerReportEntity report) {
+	}
+
+	public void noticeBattlePanel(SocketAddress addr, ServerReport.ServerReportEntity report) {
+	}
+	
+	//è®¾ç½®åˆå§‹åæ ‡ä¸ºå±å¹•æ­£ä¸­å¿ƒ
 	public void setInitPosition_Center() {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension frameSize = this.getSize();
@@ -59,7 +83,7 @@ public class GlobalMonitorFrame extends JFrame {
 	
 	private void startListener() {
 		try {
-			server = new GlobalServer("/GlobalConfiguration.properties", new GlobalChannelInitializer(new GlobalServerHandler()));
+			server = new GlobalServer("/GlobalConfiguration.properties", new GlobalChannelInitializer(new GlobalServerHandler(this)));
 			serverThread = new Thread(server);
 			serverThread.start();
 		} catch (ConfigParseException e) {

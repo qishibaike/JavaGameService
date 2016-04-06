@@ -7,15 +7,19 @@ import java.awt.Insets;
 
 import javax.swing.JPanel;
 
+import org.tont.proto.ServerReport;
+
 public class BusinessPanel extends JPanel{
 	
 	private static final long serialVersionUID = 2889439458303943304L;
-	private JPanel info;
-	private JPanel logger;
+	private BusinessInfoChildPanel info;
+	private LogChildPanel logger;
+	
+	//private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public BusinessPanel() {
 		
-		//…Ë÷√≤ºæ÷
+		//Èù¢ÊùøÂ∏ÉÂ±Ä
 		GridBagLayout gridBagLayout = new GridBagLayout();
         gridBagLayout.columnWidths = new int[] { 0 };
         gridBagLayout.rowHeights = new int[] { 0, 0 };
@@ -23,9 +27,9 @@ public class BusinessPanel extends JPanel{
         gridBagLayout.rowWeights = new double[] { 0.0, 1.0E-4 };
         this.setLayout(gridBagLayout);
         
-        //ÃÌº”øÿº˛
+        //Â≠êÈù¢Êùø
         {
-        	info = new HardwareInfoChildPanel("“µŒÒ–≈œ¢");
+        	info = new BusinessInfoChildPanel("‰∏öÂä°‰ø°ÊÅØ");
         	info.setPreferredSize(new Dimension(410, 220));
             GridBagConstraints constraints = new GridBagConstraints();
             constraints.fill = GridBagConstraints.BOTH;
@@ -35,7 +39,7 @@ public class BusinessPanel extends JPanel{
             add(info, constraints);
         }
         {
-        	logger = new LogChildPanel("“µŒÒ»’÷æ");
+        	logger = new LogChildPanel("‰∏öÂä°Êó•Âøó");
         	logger.setPreferredSize(new Dimension(410, 220));
             GridBagConstraints constraints = new GridBagConstraints();
             constraints.fill = GridBagConstraints.BOTH;
@@ -44,5 +48,12 @@ public class BusinessPanel extends JPanel{
             constraints.gridy = 1;
             add(logger, constraints);
         }
+	}
+	
+	public void notice(ServerReport.ServerReportEntity report) {
+		info.handleTotalNum.setText(report.getHandleTotalNum()+"");
+		info.handleSpeed.setText(report.getHandleSpeedNow()+"");
+		info.loginNum.setText(report.getLoginNum()+"");
+		info.handleTotalNum.setText(report.getHandleTotalNum()+"");
 	}
 }

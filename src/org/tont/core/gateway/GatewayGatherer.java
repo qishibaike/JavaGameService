@@ -1,8 +1,15 @@
 package org.tont.core.gateway;
 
+import io.netty.channel.Channel;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 
 import org.tont.core.ServerInfoGatherer;
+import org.tont.core.netty.ServerChannelManager;
+import org.tont.proto.GameMsgEntity;
+import org.tont.proto.ServerReport;
 
 public class GatewayGatherer extends ServerInfoGatherer {
 	
@@ -15,12 +22,50 @@ public class GatewayGatherer extends ServerInfoGatherer {
 	protected void Log() {
 		System.out.println("************************");
 		System.out.println(format.format(new Date())
-			+ "  µ±Ç°·şÎñÆ÷´¦ÀíÇëÇóËÙ¶È £º"+getCurrentSpeedPerSecond()+" ¸öÇëÇó/Ãë\n"
-			+ "Ò»¹²´¦Àí"+handleLoginNum.get()+"´ÎµÇÂ¼ÇëÇó");
+			+ " å½“å‰ç½‘å…³æœåŠ¡å™¨å¤„ç†è¯·æ±‚é€Ÿåº¦"+getCurrentSpeedPerSecond()+" ä¸ªè¯·æ±‚/æ¯ç§’\n"
+			+"å…¶ä¸­ç™»å½•è¯·æ±‚"+handleLoginNum.get()+"ä¸ª");
 	}
 	
 	@Override
 	protected void reportToGlobal() {
-		
+		Channel globalChannel = ServerChannelManager.getChannel(GLOBAL);
+		if (globalChannel != null) {
+			//æ”¶é›†æœåŠ¡å™¨ä¿¡æ¯
+			int cpuCount = Runtime.getRuntime().availableProcessors();
+			int cpuRatio = this.getAvgCpuUsingRatio();
+			long freeMemory = Runtime.getRuntime().freeMemory();
+			long totalMemory = Runtime.getRuntime().totalMemory();
+			String osName = System.getProperty("os.name");
+			String jreVersion = System.getProperty("java.version");
+			long updateTime = System.currentTimeMillis();
+			String ip = null;
+			try {
+				ip = InetAddress.getLocalHost().getHostAddress();
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			}
+			
+			//å°†æœåŠ¡å™¨ä¿¡æ¯å°è£…è‡³Protocol Bufferåºåˆ—åŒ–å¯¹è±¡
+			ServerReport.ServerReportEntity.Builder builder = ServerReport.ServerReportEntity.newBuilder();
+			builder.setCpuCount(cpuCount);
+			builder.setCpuRatio(cpuRatio);
+			builder.setMemoryFree(freeMemory);
+			builder.setMemoryTotal(totalMemory);
+			builder.setOsName(osName);
+			builder.setIpAddr(ip);
+			builder.setJavaVersion(jreVersion);
+			builder.setStartTime(startTime);
+			builder.setUpdateTime(updateTime);
+			builder.setHandleTotalNum(handleTotalNum.get());
+			builder.setHandleSpeedNow(currentSpeedPerSecond);
+			ServerReport.ServerReportEntity report = builder.build();
+			
+			//å°è£…æˆæ•°æ®åŒ…å¹¶å‘é€ç»™GlobalæœåŠ¡å™¨
+			GameMsgEntity msg = new GameMsgEntity();
+			msg.setMsgCode(GatewayGatherer.GATEWAY_CODE);
+			msg.setData(report.toByteArray());
+			globalChannel.writeAndFlush(msg);
+		}
 	}
+	
 }

@@ -15,9 +15,12 @@ import org.tont.core.netty.SendMsgEncoder;
 
 public class BaseServerConnector implements Runnable {
 	
+	private boolean closed = false;
 	private int port;
 	private String host;
 	private final ChannelInboundHandlerAdapter handler;
+	private Bootstrap boot;
+	private EventLoopGroup group;
 	
 	public BaseServerConnector(int port, String ip, ChannelInboundHandlerAdapter handler) {
 		this.port = port;
@@ -25,10 +28,10 @@ public class BaseServerConnector implements Runnable {
 		this.handler = handler;
 	}
 	
-	public void connect() throws Exception {
-		EventLoopGroup group = new NioEventLoopGroup();
+	public void connect() throws InterruptedException {
+		group = new NioEventLoopGroup();
 		try {
-			Bootstrap boot = new Bootstrap();
+			boot = new Bootstrap();
 			boot.group(group)
 				.channel(NioSocketChannel.class)
 				.option(ChannelOption.TCP_NODELAY, true)
@@ -43,12 +46,25 @@ public class BaseServerConnector implements Runnable {
 					}
 					
 				});
-			
-			ChannelFuture cFuture = boot.connect(host, port).sync();
-			cFuture.channel().closeFuture().sync();
-			
+			tryConnect();
 		} finally {
 			group.shutdownGracefully();
+			if (!closed) {
+				Thread.sleep(5000);
+				BaseServerConnector con = new BaseServerConnector(port,host,handler);
+				new Thread(con).start();
+			}
+		}
+	}
+	
+	public void tryConnect() {
+		System.out.println("tryConnect"+port);
+		ChannelFuture cFuture = boot.connect(host, port);
+		try {
+			cFuture.sync();
+			cFuture.channel().closeFuture().sync();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -56,8 +72,7 @@ public class BaseServerConnector implements Runnable {
 	public void run() {
 		try {
 			this.connect();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}

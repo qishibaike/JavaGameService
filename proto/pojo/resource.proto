@@ -1,0 +1,27 @@
+// [START declaration]
+syntax = "proto3";
+package proto;
+// [END declaration]
+
+// [START java_declaration]
+option java_package = "org.tont.proto";
+option java_outer_classname = "PlayerOwnedRes";
+// [END java_declaration]
+
+// [START csharp_declaration]
+option csharp_namespace = "Google.Protobuf.ToNT.PlayerOwnedRes";
+// [END csharp_declaration]
+
+
+// [START messages]
+message ResEntity {
+	string resId = 1;
+	string resName = 2;
+	string description = 3;
+	int32 num = 4;
+}
+
+message Resources {
+	map<string, string> resMap = 1;
+}
+// [END messages]

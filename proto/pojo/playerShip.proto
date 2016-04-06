@@ -1,0 +1,29 @@
+// [START declaration]
+syntax = "proto3";
+package proto;
+// [END declaration]
+
+// [START java_declaration]
+option java_package = "org.tont.proto";
+option java_outer_classname = "PlayerOwnedShip";
+// [END java_declaration]
+
+// [START csharp_declaration]
+option csharp_namespace = "Google.Protobuf.ToNT.PlayerOwnedShip";
+// [END csharp_declaration]
+
+
+// [START messages]
+message ShipEntity {
+	string shipId = 1;
+	string shipName = 2;
+	string description = 3;
+	int32 level = 4;
+	int32 exp = 5;
+	string detail = 6;
+}
+
+message Ships {
+	repeated ShipEntity ship = 1;
+}
+// [END messages]

@@ -9,24 +9,58 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class LogChildPanel extends JPanel {
 
 	private static final long serialVersionUID = -1014849886128696564L;
-	private JTextArea logWin;
+	public JTextArea logWin;
 
 	public LogChildPanel(String title) {
 		GridBagLayout bagLayout = new GridBagLayout();
 		this.setLayout(bagLayout);
 		
 		logWin = new JTextArea();
-		logWin.setBackground(new Color(0x404040));
-		logWin.setForeground(new Color(0x00FF00));
+		logWin.setBackground(new Color(0x303030));
+		logWin.setForeground(new Color(0x00EE00));
 		logWin.setLineWrap(true);
 		logWin.setEditable(false);
-		logWin.setText("初始化日志窗口完成！\n");
+		logWin.setText("鏃ュ織绐楀彛鍒濆鍖栧畬鎴怽n");
+		logWin.getDocument().addDocumentListener(new DocumentListener(){
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						if (logWin.getLineCount() >= 100) {
+					        int end = 0;
+					        try {
+					        	end = logWin.getLineEndOffset(10);
+					        } catch (Exception e1) {
+					        }
+					        logWin.replaceRange("", 0, end);
+						}
+					}
+					
+				});
+				
+				logWin.setCaretPosition(logWin.getText().length());
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {}
+			
+			});
 		this.setBorder(BorderFactory.createTitledBorder(title));
 		JScrollPane scroll = new JScrollPane(logWin);
+		
 		
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
@@ -37,4 +71,6 @@ public class LogChildPanel extends JPanel {
         constraints.weighty = 1;
 		add(scroll, constraints);
 	}
+	
+	
 }

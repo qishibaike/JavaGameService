@@ -4,18 +4,24 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JPanel;
+
+import org.tont.proto.ServerReport;
 
 public class HardwarePanel extends JPanel {
 
 	private static final long serialVersionUID = 2329271184658064412L;
-	private JPanel info;
-	private JPanel logger;
+	private HardwareInfoChildPanel info;
+	private LogChildPanel logger;
+	
+	private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public HardwarePanel() {
 		
-		//…Ë÷√≤ºæ÷
+		//Èù¢ÊùøÂ∏ÉÂ±Ä
 		GridBagLayout gridBagLayout = new GridBagLayout();
         gridBagLayout.columnWidths = new int[] { 0 };
         gridBagLayout.rowHeights = new int[] { 0, 0 };
@@ -23,9 +29,9 @@ public class HardwarePanel extends JPanel {
         gridBagLayout.rowWeights = new double[] { 0.0, 1.0E-4 };
         this.setLayout(gridBagLayout);
         
-        //ÃÌº”øÿº˛
+        //Â≠êÈù¢Êùø
         {
-        	info = new HardwareInfoChildPanel("”≤º˛–≈œ¢");
+        	info = new HardwareInfoChildPanel("Á°¨‰ª∂‰ø°ÊÅØ");
         	info.setPreferredSize(new Dimension(410, 220));
             GridBagConstraints constraints = new GridBagConstraints();
             constraints.fill = GridBagConstraints.BOTH;
@@ -35,7 +41,7 @@ public class HardwarePanel extends JPanel {
             add(info, constraints);
         }
         {
-        	logger = new LogChildPanel("”≤º˛»’÷æ");
+        	logger = new LogChildPanel("Á°¨‰ª∂Êó•Âøó");
         	logger.setPreferredSize(new Dimension(410, 220));
             GridBagConstraints constraints = new GridBagConstraints();
             constraints.fill = GridBagConstraints.BOTH;
@@ -44,5 +50,24 @@ public class HardwarePanel extends JPanel {
             constraints.gridy = 1;
             add(logger, constraints);
         }
+	}
+	
+	public void notice(ServerReport.ServerReportEntity report) {
+		String usedMemoryMB = (report.getMemoryTotal()-report.getMemoryFree())/1024/1024+"";
+		info.cpuCount.setText(report.getCpuCount()+"");
+		info.cpuRatio.setText(report.getCpuRatio()+"%");
+		info.memoryFree.setText(report.getMemoryFree()+"");
+		info.memoryTotal.setText(report.getMemoryTotal()+"");
+		info.os.setText(report.getOsName());
+		info.ip.setText(report.getIpAddr());
+		info.version.setText(report.getJavaVersion());
+		info.startTime.setText(format.format(new Date(report.getStartTime())));
+		info.updateTime.setText(format.format(new Date(report.getUpdateTime())));
+		
+		logger.logWin.append(format.format(new Date()) 
+				+ "   CPU: " + report.getCpuRatio() 
+				+ "% , Memory: " + usedMemoryMB + " MB" 
+				+ "/" + report.getMemoryTotal()/1024/1024 + " MB"
+				+ "\n");
 	}
 }

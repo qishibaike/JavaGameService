@@ -1,19 +1,32 @@
 package org.tont.core;
 
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.hyperic.sigar.CpuPerc;
+import org.hyperic.sigar.Sigar;
+import org.hyperic.sigar.SigarException;
+
 public class ServerInfoGatherer {
+	
+	public static final String GLOBAL = "GlobalServerChannel";
+	public static final short GATEWAY_CODE = 86;
+	public static final short MARKET_CODE = 87;
 	
 	protected AtomicLong handleTotalNum = new AtomicLong(0);
 	protected long lastHandleNum = 0L;
 	protected AtomicLong handleLoginNum = new AtomicLong(0);
-	private long currentSpeedPerSecond = 0L;
+	protected long currentSpeedPerSecond = 0L;
 	private long analysePeriod = 2000L;
+	protected long startTime;
+	
 	protected SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+	protected Sigar sigar = new Sigar();
 	
 	public boolean isLog = true;
 	
@@ -21,8 +34,11 @@ public class ServerInfoGatherer {
 	private TimerTask dataAnalyse = new TimerTask() {
 		@Override
 		public void run() {
+			//æ›´æ–°å¤„ç†è¯·æ±‚çš„æ•°ç›®
 			updateHandleNum();
+			//å°†æœåŠ¡å™¨ä¸»æœºçŠ¶æ€æŠ¥å‘Šç»™GlobalMonitoræœåŠ¡å™¨
 			reportToGlobal();
+			//æ‰“å°æ—¥å¿—
 			if (isLog)
 				Log();
 		}
@@ -38,26 +54,26 @@ public class ServerInfoGatherer {
 		
 	}
 	
-	//Ôö¼Ó¼ÆÊı
+	//å¢åŠ æ€»å…±å¤„ç†çš„è¯·æ±‚çš„è®¡æ•°
 	public void handleRequest() {
 		handleTotalNum.incrementAndGet();
 	}
 	
-	//»ñÈ¡µ±Ç°´¦ÀíËÙ¶È
 	public long getCurrentSpeedPerSecond() {
 		return currentSpeedPerSecond;
 	}
 	
-	//Æô¶¯Êı¾İ·ÖÎö¶¨Ê±ÈÎÎñ
+	//å¯åŠ¨æ•°æ®æ”¶é›†å®šæ—¶å™¨
 	public void startDataAnalyse() {
-		timer.schedule(dataAnalyse, 3000, analysePeriod);	//ÑÓÊ±3Ãë
+		startTime = System.currentTimeMillis();
+		timer.schedule(dataAnalyse, 3000, analysePeriod);	//å»¶è¿Ÿ3ç§’åå¯åŠ¨æ•°æ®æ”¶é›†åˆ†æçº¿ç¨‹
 	}
 	
-	//Êä³öÈÕÖ¾
+	//è¾“å‡ºæ—¥å¿—
 	protected void Log() {
 		System.out.println("************************");
-		System.out.println(format.format(new Date())
-			+ "  µ±Ç°·şÎñÆ÷´¦ÀíÇëÇóËÙ¶È £º"+getCurrentSpeedPerSecond()+" ¸öÇëÇó/Ãë");
+		System.out.println(this.format.format(new Date())
+			+ " å½“å‰æœåŠ¡å™¨å¤„ç†è¯·æ±‚é€Ÿåº¦"+getCurrentSpeedPerSecond()+" ä¸ªè¯·æ±‚/æ¯ç§’");
 	}
 	
 	//Getter and Setter
@@ -67,6 +83,43 @@ public class ServerInfoGatherer {
 
 	public void setAnalysePeriod(long analysePeriod) {
 		this.analysePeriod = analysePeriod;
+	}
+	
+	//Get System Info by Sigar or Jvm
+	
+	public int getAvgCpuUsingRatio() {
+		CpuPerc cpuList[] = null;  
+		try {  
+		    cpuList = sigar.getCpuPercList();  
+		} catch (SigarException e) {  
+		    e.printStackTrace();  
+		}  
+		double cpuUsedSum = 0;
+		for (int i = 0; i < cpuList.length; i++) {
+			double cpuUsed = cpuList[i].getCombined();
+			cpuUsedSum += cpuUsed;
+		}
+		return (int) (cpuUsedSum / cpuList.length * 100);
+	}
+	
+	public long getFreeMemory() {
+		return Runtime.getRuntime().freeMemory();
+	}
+	
+	public long getTotalMemory() {
+		return Runtime.getRuntime().totalMemory();
+	}
+	
+	//For test
+	public static void main(String[] args) throws Exception {
+		String osName = System.getProperty("os.name");
+		System.out.println(osName);
+		InetAddress addr;
+        addr = InetAddress.getLocalHost();
+        String ip = addr.getHostAddress();
+        System.out.println(ip);
+        String vmVersion = System.getProperty("java.version");
+        System.out.println(vmVersion);
 	}
 	
 }

@@ -16,9 +16,8 @@ public class MessageDispatcher {
 	private RingBuffer<DispatchEvent> ringBuffer;
 	private EventFactory<DispatchEvent> eventFactory;
 	private ExecutorService executor;
-	private int ringBufferSize; // RingBuffer ¥Û–°£¨±ÿ–Î « 2 µƒ N ¥Œ∑Ω£ª
+	private int ringBufferSize; //RingBufferÁöÑÊï∞ÁªÑÂ§ßÂ∞è
 	private Disruptor<DispatchEvent> disruptor;
-	private EventHandler<DispatchEvent> eventHandler;
 	private WaitStrategy strategy;
 	
 	public MessageDispatcher(int ringBufferSize, WaitStrategy strategy) {
@@ -27,14 +26,12 @@ public class MessageDispatcher {
 	}
 	
 	@SuppressWarnings({ "unchecked", "deprecation" })
-	public void init() {
+	public void init(EventHandler<DispatchEvent> eventHandler) {
 		eventFactory = new DispatchEventFactory();
 		executor = Executors.newCachedThreadPool();
 		disruptor = new Disruptor<DispatchEvent>(eventFactory,
 		                ringBufferSize, executor, ProducerType.MULTI,
 		                strategy);
-		        
-		eventHandler = new DispatchEventHandler();
 		disruptor.handleEventsWith(eventHandler);
 		disruptor.start();
 		
