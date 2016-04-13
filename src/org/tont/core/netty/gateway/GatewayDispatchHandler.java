@@ -28,8 +28,8 @@ public class GatewayDispatchHandler extends ChannelInboundHandlerAdapter {
 	
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		SessionEntity session = new SessionEntity(1, "", ctx.channel());
-		sessionPool.setSession(1, session);
+		SessionEntity session = new SessionEntity(3, "", ctx.channel());
+		sessionPool.setSession(3, session);
 	}
 
 	@Override
@@ -39,6 +39,10 @@ public class GatewayDispatchHandler extends ChannelInboundHandlerAdapter {
 		msgEntity.setChannel(ctx.channel());
 		switch (msgEntity.getMsgCode()) {
 			case 100:	//注册登录等直接由网关处理的请求
+				Gateway.Dispatcher().onData(msgEntity);
+				break;
+				
+			case 110:	//注册登录等直接由网关处理的请求
 				Gateway.Dispatcher().onData(msgEntity);
 				break;
 				
@@ -62,6 +66,13 @@ public class GatewayDispatchHandler extends ChannelInboundHandlerAdapter {
 			case 500:
 				//角色数据
 				Gateway.Gatherer().handleRequest();
+				ServerChannelManager.getChannel(SCENE).writeAndFlush(msgEntity);
+				break;
+				
+			case 540:
+				//角色数据
+				Gateway.Gatherer().handleRequest();
+				System.out.println(msgEntity.getPid());
 				ServerChannelManager.getChannel(SCENE).writeAndFlush(msgEntity);
 				break;
 				

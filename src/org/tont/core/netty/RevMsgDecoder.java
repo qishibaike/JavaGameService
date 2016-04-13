@@ -1,6 +1,7 @@
 package org.tont.core.netty;
 
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
 
 import org.tont.proto.GameMsgEntity;
 
@@ -32,7 +33,7 @@ public class RevMsgDecoder extends LengthFieldBasedFrameDecoder{
 	}
 	
 	public RevMsgDecoder () {
-		this(ByteOrder.BIG_ENDIAN, 100000, 0, 4, 2, 4, true);
+		this(ByteOrder.BIG_ENDIAN, 100000, 0, 4, 38, 4, true);
 	}
 	
 	/**
@@ -47,20 +48,18 @@ public class RevMsgDecoder extends LengthFieldBasedFrameDecoder{
 		}
 
 		short msgCode = frame.readShort();// 先读取两个字节命令码
-		
-		GameMsgEntity msg = new GameMsgEntity();
-		if (msgCode > 200) {	// 获取Pid和Token
-			int pid = frame.readInt();
-			String token = frame.readBytes(64).toString();
-			msg.setPid(pid);
-			msg.setToken(token);
-		}
+		int pid = frame.readInt();
+		String token = frame.readBytes(32).toString(Charset.forName("UTF-8"));
 		
 		byte[] data = new byte[frame.readableBytes()];// 其它数据为实际数据
 		frame.readBytes(data);
 		
+		GameMsgEntity msg = new GameMsgEntity();
 		msg.setMsgCode(msgCode);
+		msg.setPid(pid);
+		msg.setToken(token);
 		msg.setData(data);
+		msg.setChannel(ctx.channel());
 		
 		frame.release();
 		return msg;

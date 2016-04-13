@@ -1,15 +1,19 @@
 package org.tont.core.disruptor;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
 import org.tont.core.cache.ServerCache;
 import org.tont.core.netty.ServerChannelManager;
 import org.tont.proto.GameMsgEntity;
 import org.tont.proto.PlayerOwnedRes;
 import org.tont.proto.PlayerOwnedShip;
+import org.tont.proto.pojo.PlayerResource;
 import org.tont.util.ConstantUtil;
+import org.tont.util.MyBatisUtil;
 
 import redis.clients.jedis.Jedis;
 
@@ -22,6 +26,7 @@ public class SceneDispatchEventHandler  implements EventHandler<DispatchEvent> {
 	private final String MARKET = ConstantUtil.MARKET;
 	private final String BATTLE = ConstantUtil.BATTLE;
 	private final String SCENE = ConstantUtil.SCENE;
+	private final String GET_ALL_BY_PID = "org.tont.proto.pojo.PlayerResourceMapper.getAllByPid";
 	
 	@Override
 	public void onEvent(DispatchEvent event, long sequence, boolean endOfBatch)
@@ -44,15 +49,50 @@ public class SceneDispatchEventHandler  implements EventHandler<DispatchEvent> {
 	 * @param msg
 	 */
 	public void queryOwnRes(GameMsgEntity msg) {
-		Jedis jedis = ServerCache.getJedis();
+		
+		Jedis jedis = null;
+		
 		try {
-			Map<String, String> res = jedis.hgetAll("OwnRes:" + msg.getPid());
-			if (res == null) {
+			jedis = ServerCache.getJedis();
+			Map<String, String> resMap = null;
+			
+			if (jedis != null) {
+				resMap = jedis.hgetAll("OwnRes:" + msg.getPid());
+			} else {
+				//无法连接至缓存服务器
+				//return;
+			}
+			
+			if (resMap == null) {
 				//缓存中没有，从数据库加载
+				SqlSession sqlSession = null;
+				
+				try {
+					sqlSession = MyBatisUtil.getSqlSession();
+					List<PlayerResource> resList = sqlSession.selectList(GET_ALL_BY_PID, msg.getPid());
+					resMap = new HashMap<String,String>();
+					for (int i = 0; i < resList.size() ; i++) {
+						PlayerResource resItem = resList.get(i);
+						resMap.put(resItem.getRid()+"", resItem.getNumber()+"");
+					}
+					System.out.println(msg.getPid());
+					System.out.println(resMap);
+					//从缓存中找到数据，经由网关返回结果给客户端
+					PlayerOwnedRes.Resources.Builder builder = PlayerOwnedRes.Resources.newBuilder();
+					builder.putAllResMap(resMap);
+					PlayerOwnedRes.Resources resources = builder.build();
+					msg.setData(resources.toByteArray());
+					ServerChannelManager.getChannel(GATEWAY).writeAndFlush(msg);
+				} finally {
+					if (sqlSession != null) {
+						sqlSession.close();
+					}
+				}
+				
 			} else {
 				//从缓存中找到数据，经由网关返回结果给客户端
 				PlayerOwnedRes.Resources.Builder builder = PlayerOwnedRes.Resources.newBuilder();
-				builder.putAllResMap(res);
+				builder.putAllResMap(resMap);
 				PlayerOwnedRes.Resources resources = builder.build();
 				msg.setData(resources.toByteArray());
 				ServerChannelManager.getChannel(GATEWAY).writeAndFlush(msg);

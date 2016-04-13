@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.tont.proto.pojo.PlayerMapper">
+    <insert id="addPlayer" parameterType="org.tont.proto.pojo.Player"
+        useGeneratedKeys="true" keyProperty="pid">
+        INSERT INTO PLAYERS(ACCOUNT,PASSWORD,NICKNAME) VALUES(#{account},#{password},#{nickname})
+    </insert>
+    
+    <update id="banByPid" parameterType="int">
+        UPDATE PLAYERS SET ISBANED=TRUE WHERE PID=#{pid}
+    </update>
+    
+    <update id="updatePlayer" parameterType="org.tont.proto.pojo.Player">
+        UPDATE PLAYERS SET GOLD=#{gold},CUR_SCENE=#{cur_Scene},CUR_POS_X=#{cur_Pos_X},CUR_POS_Y=#{cur_Pos_Y},HP=#{hp} WHERE PID=#{pid}
+    </update>
+    
+    <select id="findByPid" parameterType="int" 
+        resultType="org.tont.proto.pojo.Player">
+        SELECT * FROM PLAYERS WHERE PID=#{pid}
+    </select>
+    
+    <select id="findByAccount" parameterType="string" 
+        resultType="org.tont.proto.pojo.Player">
+        SELECT * FROM PLAYERS WHERE ACCOUNT=#{account}
+    </select>
+    
+    <select id="findByNickname" parameterType="string" 
+        resultType="org.tont.proto.pojo.Player">
+        SELECT * FROM PLAYERS WHERE NICKNAME=#{nickname}
+    </select>
+    
+    <select id="findByPlayer" parameterType="org.tont.proto.pojo.Player" 
+        resultType="org.tont.proto.pojo.Player">
+        SELECT * FROM PLAYERS WHERE ACCOUNT=#{account} AND PASSWORD=#{password}
+    </select>
+    
+</mapper>

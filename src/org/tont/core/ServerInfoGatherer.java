@@ -28,7 +28,7 @@ public class ServerInfoGatherer {
 	
 	protected Sigar sigar = new Sigar();
 	
-	public boolean isLog = true;
+	public boolean isLog = false;
 	
 	private Timer timer = new Timer();
 	private TimerTask dataAnalyse = new TimerTask() {

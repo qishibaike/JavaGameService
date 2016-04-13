@@ -50,7 +50,7 @@ public class BaseServerConnector implements Runnable {
 		} finally {
 			group.shutdownGracefully();
 			if (!closed) {
-				Thread.sleep(5000);
+				Thread.sleep(8000);
 				BaseServerConnector con = new BaseServerConnector(port,host,handler);
 				new Thread(con).start();
 			}
@@ -74,6 +74,10 @@ public class BaseServerConnector implements Runnable {
 			this.connect();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		} catch (Exception ex) {
+			if (!ex.getMessage().startsWith("Connection refused:")) {
+				throw ex;
+			}
 		}
 	}
 

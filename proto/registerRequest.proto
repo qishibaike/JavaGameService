@@ -1,0 +1,23 @@
+// [START declaration]
+syntax = "proto3";
+package proto;
+// [END declaration]
+
+// [START java_declaration]
+option java_package = "org.tont.proto";
+option java_outer_classname = "RegisterRequest";
+// [END java_declaration]
+
+// [START csharp_declaration]
+option csharp_namespace = "Google.Protobuf.ToNT.RegisterRequest";
+// [END csharp_declaration]
+
+
+// [START messages]
+message RegisterRequestEntity {
+	string account = 1;
+	string password = 2;
+	string deviceid = 3;
+	string nickname = 4;
+}
+// [END messages]

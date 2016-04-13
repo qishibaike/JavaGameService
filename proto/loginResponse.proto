@@ -14,13 +14,17 @@ option csharp_namespace = "Google.Protobuf.ToNT.LoginResponse";
 
 // [START messages code 100]
 message LoginResponseEntity {
-	string token = 1;
-	string nickname = 2;
-	bool isnamed = 3;
-	int32 gold = 4;
-	int32 curScene = 5;
-	int32 curPosX = 6;
-	int32 curPosY = 7;
-	int32 hp = 8;
+	bool success = 1;
+	string message = 2;
+	
+	int32 pid = 3;
+	string token = 4;
+	string nickname = 5;
+	bool isnamed = 6;
+	int32 gold = 7;
+	int32 curScene = 8;
+	int32 curPosX = 9;
+	int32 curPosY = 10;
+	int32 hp = 11;
 }
 // [END messages]
