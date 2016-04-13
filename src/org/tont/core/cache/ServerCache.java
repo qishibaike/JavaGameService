@@ -33,7 +33,17 @@ public class ServerCache {
 	}
 	
 	public static Jedis getJedis() {
-		return pool == null? null : pool.getResource();
+		Jedis jedis = null;
+		try {
+			jedis = (pool == null? null : pool.getResource());
+		} catch (RuntimeException e) {
+			if (e.getMessage().equals("Could not get a resource from the pool")) {
+				System.out.println("Could not get a resource from the pool");
+			} else {
+				throw e;
+			}
+		}
+		return jedis;
 	}
 	
 	public static void closePool() {

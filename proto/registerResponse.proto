@@ -1,0 +1,22 @@
+// [START declaration]
+syntax = "proto3";
+package proto;
+// [END declaration]
+
+// [START java_declaration]
+option java_package = "org.tont.proto";
+option java_outer_classname = "RegisterResponse";
+// [END java_declaration]
+
+// [START csharp_declaration]
+option csharp_namespace = "Google.Protobuf.ToNT.RegisterResponse";
+// [END csharp_declaration]
+
+
+// [START messages]
+message RegisterResponseEntity {
+	bool success = 1;
+	string message = 2;
+	int32 pid = 3;
+}
+// [END messages]

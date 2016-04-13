@@ -13,52 +13,72 @@ public final class LoginResponse {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string token = 1;</code>
+     * <code>optional bool success = 1;</code>
+     */
+    boolean getSuccess();
+
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    java.lang.String getMessage();
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getMessageBytes();
+
+    /**
+     * <code>optional int32 pid = 3;</code>
+     */
+    int getPid();
+
+    /**
+     * <code>optional string token = 4;</code>
      */
     java.lang.String getToken();
     /**
-     * <code>optional string token = 1;</code>
+     * <code>optional string token = 4;</code>
      */
     com.google.protobuf.ByteString
         getTokenBytes();
 
     /**
-     * <code>optional string nickname = 2;</code>
+     * <code>optional string nickname = 5;</code>
      */
     java.lang.String getNickname();
     /**
-     * <code>optional string nickname = 2;</code>
+     * <code>optional string nickname = 5;</code>
      */
     com.google.protobuf.ByteString
         getNicknameBytes();
 
     /**
-     * <code>optional bool isnamed = 3;</code>
+     * <code>optional bool isnamed = 6;</code>
      */
     boolean getIsnamed();
 
     /**
-     * <code>optional int32 gold = 4;</code>
+     * <code>optional int32 gold = 7;</code>
      */
     int getGold();
 
     /**
-     * <code>optional int32 curScene = 5;</code>
+     * <code>optional int32 curScene = 8;</code>
      */
     int getCurScene();
 
     /**
-     * <code>optional int32 curPosX = 6;</code>
+     * <code>optional int32 curPosX = 9;</code>
      */
     int getCurPosX();
 
     /**
-     * <code>optional int32 curPosY = 7;</code>
+     * <code>optional int32 curPosY = 10;</code>
      */
     int getCurPosY();
 
     /**
-     * <code>optional int32 hp = 8;</code>
+     * <code>optional int32 hp = 11;</code>
      */
     int getHp();
   }
@@ -78,6 +98,9 @@ public final class LoginResponse {
       super(builder);
     }
     private LoginResponseEntity() {
+      success_ = false;
+      message_ = "";
+      pid_ = 0;
       token_ = "";
       nickname_ = "";
       isnamed_ = false;
@@ -112,44 +135,60 @@ public final class LoginResponse {
               }
               break;
             }
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
+            case 8: {
 
-              token_ = s;
+              success_ = input.readBool();
               break;
             }
             case 18: {
               java.lang.String s = input.readStringRequireUtf8();
 
-              nickname_ = s;
+              message_ = s;
               break;
             }
             case 24: {
 
-              isnamed_ = input.readBool();
+              pid_ = input.readInt32();
               break;
             }
-            case 32: {
+            case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
 
-              gold_ = input.readInt32();
+              token_ = s;
               break;
             }
-            case 40: {
+            case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
 
-              curScene_ = input.readInt32();
+              nickname_ = s;
               break;
             }
             case 48: {
 
-              curPosX_ = input.readInt32();
+              isnamed_ = input.readBool();
               break;
             }
             case 56: {
 
-              curPosY_ = input.readInt32();
+              gold_ = input.readInt32();
               break;
             }
             case 64: {
+
+              curScene_ = input.readInt32();
+              break;
+            }
+            case 72: {
+
+              curPosX_ = input.readInt32();
+              break;
+            }
+            case 80: {
+
+              curPosY_ = input.readInt32();
+              break;
+            }
+            case 88: {
 
               hp_ = input.readInt32();
               break;
@@ -178,10 +217,62 @@ public final class LoginResponse {
               org.tont.proto.LoginResponse.LoginResponseEntity.class, org.tont.proto.LoginResponse.LoginResponseEntity.Builder.class);
     }
 
-    public static final int TOKEN_FIELD_NUMBER = 1;
+    public static final int SUCCESS_FIELD_NUMBER = 1;
+    private boolean success_;
+    /**
+     * <code>optional bool success = 1;</code>
+     */
+    public boolean getSuccess() {
+      return success_;
+    }
+
+    public static final int MESSAGE_FIELD_NUMBER = 2;
+    private volatile java.lang.Object message_;
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        message_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int PID_FIELD_NUMBER = 3;
+    private int pid_;
+    /**
+     * <code>optional int32 pid = 3;</code>
+     */
+    public int getPid() {
+      return pid_;
+    }
+
+    public static final int TOKEN_FIELD_NUMBER = 4;
     private volatile java.lang.Object token_;
     /**
-     * <code>optional string token = 1;</code>
+     * <code>optional string token = 4;</code>
      */
     public java.lang.String getToken() {
       java.lang.Object ref = token_;
@@ -196,7 +287,7 @@ public final class LoginResponse {
       }
     }
     /**
-     * <code>optional string token = 1;</code>
+     * <code>optional string token = 4;</code>
      */
     public com.google.protobuf.ByteString
         getTokenBytes() {
@@ -212,10 +303,10 @@ public final class LoginResponse {
       }
     }
 
-    public static final int NICKNAME_FIELD_NUMBER = 2;
+    public static final int NICKNAME_FIELD_NUMBER = 5;
     private volatile java.lang.Object nickname_;
     /**
-     * <code>optional string nickname = 2;</code>
+     * <code>optional string nickname = 5;</code>
      */
     public java.lang.String getNickname() {
       java.lang.Object ref = nickname_;
@@ -230,7 +321,7 @@ public final class LoginResponse {
       }
     }
     /**
-     * <code>optional string nickname = 2;</code>
+     * <code>optional string nickname = 5;</code>
      */
     public com.google.protobuf.ByteString
         getNicknameBytes() {
@@ -246,55 +337,55 @@ public final class LoginResponse {
       }
     }
 
-    public static final int ISNAMED_FIELD_NUMBER = 3;
+    public static final int ISNAMED_FIELD_NUMBER = 6;
     private boolean isnamed_;
     /**
-     * <code>optional bool isnamed = 3;</code>
+     * <code>optional bool isnamed = 6;</code>
      */
     public boolean getIsnamed() {
       return isnamed_;
     }
 
-    public static final int GOLD_FIELD_NUMBER = 4;
+    public static final int GOLD_FIELD_NUMBER = 7;
     private int gold_;
     /**
-     * <code>optional int32 gold = 4;</code>
+     * <code>optional int32 gold = 7;</code>
      */
     public int getGold() {
       return gold_;
     }
 
-    public static final int CURSCENE_FIELD_NUMBER = 5;
+    public static final int CURSCENE_FIELD_NUMBER = 8;
     private int curScene_;
     /**
-     * <code>optional int32 curScene = 5;</code>
+     * <code>optional int32 curScene = 8;</code>
      */
     public int getCurScene() {
       return curScene_;
     }
 
-    public static final int CURPOSX_FIELD_NUMBER = 6;
+    public static final int CURPOSX_FIELD_NUMBER = 9;
     private int curPosX_;
     /**
-     * <code>optional int32 curPosX = 6;</code>
+     * <code>optional int32 curPosX = 9;</code>
      */
     public int getCurPosX() {
       return curPosX_;
     }
 
-    public static final int CURPOSY_FIELD_NUMBER = 7;
+    public static final int CURPOSY_FIELD_NUMBER = 10;
     private int curPosY_;
     /**
-     * <code>optional int32 curPosY = 7;</code>
+     * <code>optional int32 curPosY = 10;</code>
      */
     public int getCurPosY() {
       return curPosY_;
     }
 
-    public static final int HP_FIELD_NUMBER = 8;
+    public static final int HP_FIELD_NUMBER = 11;
     private int hp_;
     /**
-     * <code>optional int32 hp = 8;</code>
+     * <code>optional int32 hp = 11;</code>
      */
     public int getHp() {
       return hp_;
@@ -312,29 +403,38 @@ public final class LoginResponse {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
+      if (success_ != false) {
+        output.writeBool(1, success_);
+      }
+      if (!getMessageBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 2, message_);
+      }
+      if (pid_ != 0) {
+        output.writeInt32(3, pid_);
+      }
       if (!getTokenBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, token_);
+        com.google.protobuf.GeneratedMessage.writeString(output, 4, token_);
       }
       if (!getNicknameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 2, nickname_);
+        com.google.protobuf.GeneratedMessage.writeString(output, 5, nickname_);
       }
       if (isnamed_ != false) {
-        output.writeBool(3, isnamed_);
+        output.writeBool(6, isnamed_);
       }
       if (gold_ != 0) {
-        output.writeInt32(4, gold_);
+        output.writeInt32(7, gold_);
       }
       if (curScene_ != 0) {
-        output.writeInt32(5, curScene_);
+        output.writeInt32(8, curScene_);
       }
       if (curPosX_ != 0) {
-        output.writeInt32(6, curPosX_);
+        output.writeInt32(9, curPosX_);
       }
       if (curPosY_ != 0) {
-        output.writeInt32(7, curPosY_);
+        output.writeInt32(10, curPosY_);
       }
       if (hp_ != 0) {
-        output.writeInt32(8, hp_);
+        output.writeInt32(11, hp_);
       }
     }
 
@@ -343,35 +443,46 @@ public final class LoginResponse {
       if (size != -1) return size;
 
       size = 0;
+      if (success_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(1, success_);
+      }
+      if (!getMessageBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, message_);
+      }
+      if (pid_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, pid_);
+      }
       if (!getTokenBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, token_);
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(4, token_);
       }
       if (!getNicknameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, nickname_);
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(5, nickname_);
       }
       if (isnamed_ != false) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(3, isnamed_);
+          .computeBoolSize(6, isnamed_);
       }
       if (gold_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(4, gold_);
+          .computeInt32Size(7, gold_);
       }
       if (curScene_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(5, curScene_);
+          .computeInt32Size(8, curScene_);
       }
       if (curPosX_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(6, curPosX_);
+          .computeInt32Size(9, curPosX_);
       }
       if (curPosY_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(7, curPosY_);
+          .computeInt32Size(10, curPosY_);
       }
       if (hp_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(8, hp_);
+          .computeInt32Size(11, hp_);
       }
       memoizedSize = size;
       return size;
@@ -488,6 +599,12 @@ public final class LoginResponse {
       }
       public Builder clear() {
         super.clear();
+        success_ = false;
+
+        message_ = "";
+
+        pid_ = 0;
+
         token_ = "";
 
         nickname_ = "";
@@ -526,6 +643,9 @@ public final class LoginResponse {
 
       public org.tont.proto.LoginResponse.LoginResponseEntity buildPartial() {
         org.tont.proto.LoginResponse.LoginResponseEntity result = new org.tont.proto.LoginResponse.LoginResponseEntity(this);
+        result.success_ = success_;
+        result.message_ = message_;
+        result.pid_ = pid_;
         result.token_ = token_;
         result.nickname_ = nickname_;
         result.isnamed_ = isnamed_;
@@ -549,6 +669,16 @@ public final class LoginResponse {
 
       public Builder mergeFrom(org.tont.proto.LoginResponse.LoginResponseEntity other) {
         if (other == org.tont.proto.LoginResponse.LoginResponseEntity.getDefaultInstance()) return this;
+        if (other.getSuccess() != false) {
+          setSuccess(other.getSuccess());
+        }
+        if (!other.getMessage().isEmpty()) {
+          message_ = other.message_;
+          onChanged();
+        }
+        if (other.getPid() != 0) {
+          setPid(other.getPid());
+        }
         if (!other.getToken().isEmpty()) {
           token_ = other.token_;
           onChanged();
@@ -601,9 +731,130 @@ public final class LoginResponse {
         return this;
       }
 
+      private boolean success_ ;
+      /**
+       * <code>optional bool success = 1;</code>
+       */
+      public boolean getSuccess() {
+        return success_;
+      }
+      /**
+       * <code>optional bool success = 1;</code>
+       */
+      public Builder setSuccess(boolean value) {
+        
+        success_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool success = 1;</code>
+       */
+      public Builder clearSuccess() {
+        
+        success_ = false;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object message_ = "";
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder setMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder clearMessage() {
+        
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder setMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        message_ = value;
+        onChanged();
+        return this;
+      }
+
+      private int pid_ ;
+      /**
+       * <code>optional int32 pid = 3;</code>
+       */
+      public int getPid() {
+        return pid_;
+      }
+      /**
+       * <code>optional int32 pid = 3;</code>
+       */
+      public Builder setPid(int value) {
+        
+        pid_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 pid = 3;</code>
+       */
+      public Builder clearPid() {
+        
+        pid_ = 0;
+        onChanged();
+        return this;
+      }
+
       private java.lang.Object token_ = "";
       /**
-       * <code>optional string token = 1;</code>
+       * <code>optional string token = 4;</code>
        */
       public java.lang.String getToken() {
         java.lang.Object ref = token_;
@@ -618,7 +869,7 @@ public final class LoginResponse {
         }
       }
       /**
-       * <code>optional string token = 1;</code>
+       * <code>optional string token = 4;</code>
        */
       public com.google.protobuf.ByteString
           getTokenBytes() {
@@ -634,7 +885,7 @@ public final class LoginResponse {
         }
       }
       /**
-       * <code>optional string token = 1;</code>
+       * <code>optional string token = 4;</code>
        */
       public Builder setToken(
           java.lang.String value) {
@@ -647,7 +898,7 @@ public final class LoginResponse {
         return this;
       }
       /**
-       * <code>optional string token = 1;</code>
+       * <code>optional string token = 4;</code>
        */
       public Builder clearToken() {
         
@@ -656,7 +907,7 @@ public final class LoginResponse {
         return this;
       }
       /**
-       * <code>optional string token = 1;</code>
+       * <code>optional string token = 4;</code>
        */
       public Builder setTokenBytes(
           com.google.protobuf.ByteString value) {
@@ -672,7 +923,7 @@ public final class LoginResponse {
 
       private java.lang.Object nickname_ = "";
       /**
-       * <code>optional string nickname = 2;</code>
+       * <code>optional string nickname = 5;</code>
        */
       public java.lang.String getNickname() {
         java.lang.Object ref = nickname_;
@@ -687,7 +938,7 @@ public final class LoginResponse {
         }
       }
       /**
-       * <code>optional string nickname = 2;</code>
+       * <code>optional string nickname = 5;</code>
        */
       public com.google.protobuf.ByteString
           getNicknameBytes() {
@@ -703,7 +954,7 @@ public final class LoginResponse {
         }
       }
       /**
-       * <code>optional string nickname = 2;</code>
+       * <code>optional string nickname = 5;</code>
        */
       public Builder setNickname(
           java.lang.String value) {
@@ -716,7 +967,7 @@ public final class LoginResponse {
         return this;
       }
       /**
-       * <code>optional string nickname = 2;</code>
+       * <code>optional string nickname = 5;</code>
        */
       public Builder clearNickname() {
         
@@ -725,7 +976,7 @@ public final class LoginResponse {
         return this;
       }
       /**
-       * <code>optional string nickname = 2;</code>
+       * <code>optional string nickname = 5;</code>
        */
       public Builder setNicknameBytes(
           com.google.protobuf.ByteString value) {
@@ -741,13 +992,13 @@ public final class LoginResponse {
 
       private boolean isnamed_ ;
       /**
-       * <code>optional bool isnamed = 3;</code>
+       * <code>optional bool isnamed = 6;</code>
        */
       public boolean getIsnamed() {
         return isnamed_;
       }
       /**
-       * <code>optional bool isnamed = 3;</code>
+       * <code>optional bool isnamed = 6;</code>
        */
       public Builder setIsnamed(boolean value) {
         
@@ -756,7 +1007,7 @@ public final class LoginResponse {
         return this;
       }
       /**
-       * <code>optional bool isnamed = 3;</code>
+       * <code>optional bool isnamed = 6;</code>
        */
       public Builder clearIsnamed() {
         
@@ -767,13 +1018,13 @@ public final class LoginResponse {
 
       private int gold_ ;
       /**
-       * <code>optional int32 gold = 4;</code>
+       * <code>optional int32 gold = 7;</code>
        */
       public int getGold() {
         return gold_;
       }
       /**
-       * <code>optional int32 gold = 4;</code>
+       * <code>optional int32 gold = 7;</code>
        */
       public Builder setGold(int value) {
         
@@ -782,7 +1033,7 @@ public final class LoginResponse {
         return this;
       }
       /**
-       * <code>optional int32 gold = 4;</code>
+       * <code>optional int32 gold = 7;</code>
        */
       public Builder clearGold() {
         
@@ -793,13 +1044,13 @@ public final class LoginResponse {
 
       private int curScene_ ;
       /**
-       * <code>optional int32 curScene = 5;</code>
+       * <code>optional int32 curScene = 8;</code>
        */
       public int getCurScene() {
         return curScene_;
       }
       /**
-       * <code>optional int32 curScene = 5;</code>
+       * <code>optional int32 curScene = 8;</code>
        */
       public Builder setCurScene(int value) {
         
@@ -808,7 +1059,7 @@ public final class LoginResponse {
         return this;
       }
       /**
-       * <code>optional int32 curScene = 5;</code>
+       * <code>optional int32 curScene = 8;</code>
        */
       public Builder clearCurScene() {
         
@@ -819,13 +1070,13 @@ public final class LoginResponse {
 
       private int curPosX_ ;
       /**
-       * <code>optional int32 curPosX = 6;</code>
+       * <code>optional int32 curPosX = 9;</code>
        */
       public int getCurPosX() {
         return curPosX_;
       }
       /**
-       * <code>optional int32 curPosX = 6;</code>
+       * <code>optional int32 curPosX = 9;</code>
        */
       public Builder setCurPosX(int value) {
         
@@ -834,7 +1085,7 @@ public final class LoginResponse {
         return this;
       }
       /**
-       * <code>optional int32 curPosX = 6;</code>
+       * <code>optional int32 curPosX = 9;</code>
        */
       public Builder clearCurPosX() {
         
@@ -845,13 +1096,13 @@ public final class LoginResponse {
 
       private int curPosY_ ;
       /**
-       * <code>optional int32 curPosY = 7;</code>
+       * <code>optional int32 curPosY = 10;</code>
        */
       public int getCurPosY() {
         return curPosY_;
       }
       /**
-       * <code>optional int32 curPosY = 7;</code>
+       * <code>optional int32 curPosY = 10;</code>
        */
       public Builder setCurPosY(int value) {
         
@@ -860,7 +1111,7 @@ public final class LoginResponse {
         return this;
       }
       /**
-       * <code>optional int32 curPosY = 7;</code>
+       * <code>optional int32 curPosY = 10;</code>
        */
       public Builder clearCurPosY() {
         
@@ -871,13 +1122,13 @@ public final class LoginResponse {
 
       private int hp_ ;
       /**
-       * <code>optional int32 hp = 8;</code>
+       * <code>optional int32 hp = 11;</code>
        */
       public int getHp() {
         return hp_;
       }
       /**
-       * <code>optional int32 hp = 8;</code>
+       * <code>optional int32 hp = 11;</code>
        */
       public Builder setHp(int value) {
         
@@ -886,7 +1137,7 @@ public final class LoginResponse {
         return this;
       }
       /**
-       * <code>optional int32 hp = 8;</code>
+       * <code>optional int32 hp = 11;</code>
        */
       public Builder clearHp() {
         
@@ -966,13 +1217,14 @@ public final class LoginResponse {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\023loginResponse.proto\022\005proto\"\225\001\n\023LoginRe" +
-      "sponseEntity\022\r\n\005token\030\001 \001(\t\022\020\n\010nickname\030" +
-      "\002 \001(\t\022\017\n\007isnamed\030\003 \001(\010\022\014\n\004gold\030\004 \001(\005\022\020\n\010" +
-      "curScene\030\005 \001(\005\022\017\n\007curPosX\030\006 \001(\005\022\017\n\007curPo" +
-      "sY\030\007 \001(\005\022\n\n\002hp\030\010 \001(\005BD\n\016org.tont.protoB\r" +
-      "LoginResponse\252\002\"Google.Protobuf.ToNT.Log" +
-      "inResponseb\006proto3"
+      "\n\023loginResponse.proto\022\005proto\"\304\001\n\023LoginRe" +
+      "sponseEntity\022\017\n\007success\030\001 \001(\010\022\017\n\007message" +
+      "\030\002 \001(\t\022\013\n\003pid\030\003 \001(\005\022\r\n\005token\030\004 \001(\t\022\020\n\010ni" +
+      "ckname\030\005 \001(\t\022\017\n\007isnamed\030\006 \001(\010\022\014\n\004gold\030\007 " +
+      "\001(\005\022\020\n\010curScene\030\010 \001(\005\022\017\n\007curPosX\030\t \001(\005\022\017" +
+      "\n\007curPosY\030\n \001(\005\022\n\n\002hp\030\013 \001(\005BD\n\016org.tont." +
+      "protoB\rLoginResponse\252\002\"Google.Protobuf.T" +
+      "oNT.LoginResponseb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -991,7 +1243,7 @@ public final class LoginResponse {
     internal_static_proto_LoginResponseEntity_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_LoginResponseEntity_descriptor,
-        new java.lang.String[] { "Token", "Nickname", "Isnamed", "Gold", "CurScene", "CurPosX", "CurPosY", "Hp", });
+        new java.lang.String[] { "Success", "Message", "Pid", "Token", "Nickname", "Isnamed", "Gold", "CurScene", "CurPosX", "CurPosY", "Hp", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
