@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.util.AttributeKey;
 
 import org.tont.core.netty.ServerChannelManager;
 import org.tont.core.session.SessionEntity;
@@ -20,6 +21,7 @@ public class GatewayDispatchHandler extends ChannelInboundHandlerAdapter {
 	public final String SCENE = ConstantUtil.SCENE;
 	
 	private SessionPoolImp sessionPool;
+	private static final AttributeKey<Integer> PLAYERID = AttributeKey.valueOf("CHANNEL.PID");
 	
 	public GatewayDispatchHandler(SessionPoolImp sessionPool) {
 		super();
@@ -28,8 +30,10 @@ public class GatewayDispatchHandler extends ChannelInboundHandlerAdapter {
 	
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		//↓测试代码，测试完成后删除↓
 		SessionEntity session = new SessionEntity(3, "", ctx.channel());
 		sessionPool.setSession(3, session);
+		//↑测试代码，测试完成后删除↑
 	}
 
 	@Override
@@ -37,7 +41,23 @@ public class GatewayDispatchHandler extends ChannelInboundHandlerAdapter {
 			throws Exception {
 		GameMsgEntity msgEntity = (GameMsgEntity) msg;
 		msgEntity.setChannel(ctx.channel());
+		
+		if (msgEntity.getMsgCode() >= 200) {
+			if (!tokenCheck(msgEntity)) {
+				//无效Token
+				msgEntity.setMsgCode((short) 105);
+				msgEntity.setData(null);
+				ctx.channel().writeAndFlush(msgEntity);
+				return;
+			} else {
+				//将Channel与ID绑定,用于在连接断开后释放SessionPool中对应Session的Channel对象
+				ctx.channel().attr(PLAYERID).set(msgEntity.getPid());
+			}
+		}
+		
+		//后期将抽离成XML文档进行映射
 		switch (msgEntity.getMsgCode()) {
+		
 			case 100:	//注册登录等直接由网关处理的请求
 				Gateway.Dispatcher().onData(msgEntity);
 				break;
@@ -46,8 +66,11 @@ public class GatewayDispatchHandler extends ChannelInboundHandlerAdapter {
 				Gateway.Dispatcher().onData(msgEntity);
 				break;
 				
-			case 200:
-				//战斗数据
+			case 130:	//获取角色信息
+				Gateway.Dispatcher().onData(msgEntity);
+				break;
+				
+			case 200:	//战斗数据
 				Gateway.Gatherer().handleRequest();
 				ServerChannelManager.getChannel(BATTLE).writeAndFlush(msgEntity);
 				break;
@@ -58,6 +81,10 @@ public class GatewayDispatchHandler extends ChannelInboundHandlerAdapter {
 				break;
 				
 			case 400:
+			case 410:
+			case 411:
+			case 412:
+			case 420:
 				//场景数据
 				Gateway.Gatherer().handleRequest();
 				ServerChannelManager.getChannel(SCENE).writeAndFlush(msgEntity);
@@ -81,6 +108,22 @@ public class GatewayDispatchHandler extends ChannelInboundHandlerAdapter {
 		}
 	}
 	
+	private boolean tokenCheck(GameMsgEntity msgEntity) {
+		if (sessionPool.findSession(msgEntity.getPid()).getToken().equals(msgEntity.getToken())) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		Integer pid = ctx.channel().attr(PLAYERID).get();
+		if (pid != null) {
+			sessionPool.findSession(pid).setChannel(null);
+		}
+	}
+	
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
 			throws Exception {
@@ -96,7 +139,7 @@ public class GatewayDispatchHandler extends ChannelInboundHandlerAdapter {
 			IdleStateEvent event = (IdleStateEvent) evt;
 			if (event.state() == IdleState.READER_IDLE || event.state() == IdleState.WRITER_IDLE || event.state() == IdleState.ALL_IDLE) {
 				System.out.println("玩家 " + ctx.channel().remoteAddress() + " read/write idle");
-				ctx.close();
+				ctx.channel().close();
 			}
 		}
 	}

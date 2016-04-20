@@ -5,7 +5,12 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import org.tont.core.netty.ServerChannelManager;
 import org.tont.core.netty.gateway.Gateway;
+import org.tont.core.session.SessionEntity;
 import org.tont.proto.GameMsgEntity;
+import org.tont.proto.MoveBroadcast.MoveBroadcastPacket;
+import org.tont.proto.MoveBroadcast.MoveEntity;
+
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import io.netty.channel.ChannelHandler.Sharable;
 
@@ -23,7 +28,53 @@ public class SceneConnectionHandler extends ChannelInboundHandlerAdapter {
 	public void channelRead(ChannelHandlerContext ctx, Object msg)
 			throws Exception {
 		GameMsgEntity msgEntity = (GameMsgEntity) msg;
-		Gateway.getSessionPool().findSession(msgEntity.getPid()).getChannel().writeAndFlush(msgEntity);
+		/*if (msgEntity.getMsgCode() == (short)99) {
+			Gateway.getSessionPool().findSession(msgEntity.getPid()).getChannel().close();
+		} else if () {
+			
+		} else {
+			Gateway.getSessionPool().findSession(msgEntity.getPid()).getChannel().writeAndFlush(msgEntity);
+		}*/
+		
+		switch (msgEntity.getMsgCode()) {
+			case 99:
+				SessionEntity session = Gateway.getSessionPool().findSession(msgEntity.getPid());
+				session.getChannel().close();
+				session.setChannel(null);
+				break;
+			
+			case 420:
+				broadcastMoveAction(msgEntity);
+				break;
+			
+			default:
+				Gateway.getSessionPool().findSession(msgEntity.getPid()).getChannel().writeAndFlush(msgEntity);
+				break;
+		}
+	}
+	
+	
+	//广播场景移动信息
+	private void broadcastMoveAction(GameMsgEntity msg) {
+		try {
+			MoveBroadcastPacket packet = MoveBroadcastPacket.parseFrom(msg.getData());
+			MoveEntity moveEntity = packet.getMove();
+			byte [] data = moveEntity.toByteArray();
+			
+			int num = packet.getRecIdCount();
+			for (int i = 0; i < num; i++) {
+				int recPid = packet.getRecId(i);
+				SessionEntity session = Gateway.getSessionPool().findSession(recPid);
+				if (session !=null && session.getChannel() != null && session.getChannel().isActive()) {
+					GameMsgEntity broadcastMsg = new GameMsgEntity();
+					broadcastMsg.setMsgCode((short) 420);
+					broadcastMsg.setPid(recPid);
+					broadcastMsg.setData(data);
+				}
+			}
+		} catch (InvalidProtocolBufferException e) {
+			//非法信息，记录日志
+		}
 	}
 
 }

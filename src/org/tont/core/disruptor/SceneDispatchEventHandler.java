@@ -23,9 +23,6 @@ import com.lmax.disruptor.EventHandler;
 public class SceneDispatchEventHandler  implements EventHandler<DispatchEvent> {
 
 	private final String GATEWAY = ConstantUtil.GATEWAY;
-	private final String MARKET = ConstantUtil.MARKET;
-	private final String BATTLE = ConstantUtil.BATTLE;
-	private final String SCENE = ConstantUtil.SCENE;
 	private final String GET_ALL_BY_PID = "org.tont.proto.pojo.PlayerResourceMapper.getAllByPid";
 	
 	@Override
@@ -46,6 +43,7 @@ public class SceneDispatchEventHandler  implements EventHandler<DispatchEvent> {
 	
 	/**
 	 * 查询玩家拥有的资源物品列表
+	 * 以键值对<RID,NUM>的形式存储在一个map里
 	 * @param msg
 	 */
 	public void queryOwnRes(GameMsgEntity msg) {
@@ -60,7 +58,8 @@ public class SceneDispatchEventHandler  implements EventHandler<DispatchEvent> {
 				resMap = jedis.hgetAll("OwnRes:" + msg.getPid());
 			} else {
 				//无法连接至缓存服务器
-				//return;
+				System.out.println("无法连接至缓存服务器");
+				return;
 			}
 			
 			if (resMap == null) {
@@ -68,6 +67,7 @@ public class SceneDispatchEventHandler  implements EventHandler<DispatchEvent> {
 				SqlSession sqlSession = null;
 				
 				try {
+					//从数据库抓取数据并进行组装
 					sqlSession = MyBatisUtil.getSqlSession();
 					List<PlayerResource> resList = sqlSession.selectList(GET_ALL_BY_PID, msg.getPid());
 					resMap = new HashMap<String,String>();
@@ -75,14 +75,17 @@ public class SceneDispatchEventHandler  implements EventHandler<DispatchEvent> {
 						PlayerResource resItem = resList.get(i);
 						resMap.put(resItem.getRid()+"", resItem.getNumber()+"");
 					}
-					System.out.println(msg.getPid());
-					System.out.println(resMap);
-					//从缓存中找到数据，经由网关返回结果给客户端
+					
+					//将数据载入缓存
+					jedis.hmset("OwnRes:" + msg.getPid(), resMap);
+					
+					//经由网关返回结果给客户端
 					PlayerOwnedRes.Resources.Builder builder = PlayerOwnedRes.Resources.newBuilder();
 					builder.putAllResMap(resMap);
 					PlayerOwnedRes.Resources resources = builder.build();
 					msg.setData(resources.toByteArray());
 					ServerChannelManager.getChannel(GATEWAY).writeAndFlush(msg);
+					
 				} finally {
 					if (sqlSession != null) {
 						sqlSession.close();
