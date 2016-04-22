@@ -25,14 +25,28 @@ public class SceneServerHandler extends ChannelInboundHandlerAdapter {
 			throws Exception {
 		GameMsgEntity msgEntity = (GameMsgEntity) msg;
 		msgEntity.setChannel(ctx.channel());
+		
 		switch (msgEntity.getMsgCode()) {
+		
+			case 410:
+				
+				break;
+				
+			case 411:
+				break;
+				
+			case 412:
+				break;
+				
 			case 500:
 				NettyServer.Gatherer().handleRequest();
 				ctx.writeAndFlush(msgEntity);
 				break;
+				
 			default:
 				SceneServer.Dispatcher().onData(msgEntity);
 				break;
+				
 		}
 	}
 	

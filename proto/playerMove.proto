@@ -1,0 +1,42 @@
+// [START declaration]
+syntax = "proto3";
+package proto;
+// [END declaration]
+
+// [START java_declaration]
+option java_package = "org.tont.proto";
+option java_outer_classname = "MoveBroadcast";
+// [END java_declaration]
+
+// [START csharp_declaration]
+option csharp_namespace = "Google.Protobuf.ToNT.MoveBroadcast";
+// [END csharp_declaration]
+
+// [广播给玩家的场景内所有玩家的移动信息]
+// [START messages : code 410,411,412,420]
+message MoveEntity {
+	int32 pid = 1;
+	int32 sceneId = 2;
+	int32 moveSeq = 3;
+	int32 posFromX = 6;
+	int32 posFromY = 7;
+	int32 posToX = 8;
+	int32 posToY = 9;
+	int32 posCurrentX = 10;
+	int32 posCurrentY = 11;
+	int64 time = 12;
+}
+
+// [切换场景：from为-1表示进入场景界面，to为-1表示离开场景界面]
+message SwitchScene {
+	int32 from = 1;
+	int32 to = 2;
+	MoveEntity moveEntity = 3;
+}
+
+// [广播移动数据包]
+message MoveBroadcastPacket {
+	MoveEntity move = 1;
+	repeated int32 recId = 2;
+}
+// [END messages]

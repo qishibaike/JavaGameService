@@ -12,6 +12,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
 import org.tont.core.Configuration;
+import org.tont.core.GlobalTime;
 import org.tont.core.ServerInfoGatherer;
 import org.tont.exceptions.ConfigParseException;
 
@@ -29,6 +30,7 @@ public class NettyServer implements Runnable {
 		config = new Configuration(configPath);
 		System.out.println("成功从 "+configPath+" 加载配置文件");
 		this.initializer = initializer;
+		GlobalTime.start();
 	}
 	
 	public static ServerInfoGatherer Gatherer() {

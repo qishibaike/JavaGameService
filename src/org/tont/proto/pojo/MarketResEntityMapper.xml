@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.tont.proto.pojo.MarketResEntityMapper">
+    
+    <resultMap id="commodityList" type="org.tont.proto.pojo.MarketResEntity">
+        <id property="itemid" column="itemid" />
+        <result property="pid" column="pid" />
+        <result property="rid" column="rid" />
+        <result property="number" column="number" />
+        <result property="unit_Price" column="unit_Price" />
+        <result property="createTime" column="createTime" />
+    </resultMap>
+    
+    <select id="getMarketResByName" 
+        resultType="org.tont.proto.pojo.MarketResEntity">
+        SELECT * 
+        FROM MARKET_RES 
+        WHERE MARKET_RES.RID IN (
+        	SELECT RESOURCE_LIST.RID 
+        	FROM RESOURCE_LIST 
+        	WHERE RESOURCE_LIST.RES_NAME LIKE '#{resName}%'
+        ) 
+        ORDER BY #{orderByColumn} 
+        LIMIT #{startNum},#{numInPage}
+    </select>
+    
+    <select id="getMarketResByRid" 
+        resultType="org.tont.proto.pojo.MarketResEntity">
+        SELECT * 
+        FROM MARKET_RES 
+        WHERE MARKET_RES.RID = #{resId}
+        ORDER BY #{orderByColumn} 
+        LIMIT #{startNum},#{numInPage}
+    </select>
+    
+    <select id="getMarketResByPid" 
+        resultType="org.tont.proto.pojo.MarketResEntity">
+        SELECT * 
+        FROM MARKET_RES 
+        WHERE MARKET_RES.PID = #{pid}
+        ORDER BY #{orderByColumn} 
+        LIMIT #{startNum},#{numInPage}
+    </select>
+    
+    <select id="getMarketResByType" 
+        resultType="org.tont.proto.pojo.MarketResEntity">
+        SELECT * 
+        FROM MARKET_RES 
+        WHERE MARKET_RES.RID IN (
+        	SELECT RESOURCE_LIST.RID 
+        	FROM RESOURCE_LIST 
+        	WHERE RESOURCE_LIST.TYPE = #{type}
+        ) 
+        ORDER BY #{orderByColumn} 
+        LIMIT #{startNum},#{numInPage}
+    </select>
+    
+</mapper>

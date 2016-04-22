@@ -38,6 +38,12 @@ public class MessageDispatcher {
 		ringBuffer = disruptor.getRingBuffer();
 	}
 	
+	
+	//
+	public void getQueueCount() {
+		
+	}
+	
 	public void onData(GameMsgEntity inMsgEntity)
 	{
 	    long sequence = ringBuffer.next();
