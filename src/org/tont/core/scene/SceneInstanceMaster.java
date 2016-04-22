@@ -55,6 +55,10 @@ public class SceneInstanceMaster {
 		}
 	}
 	
+	
+	public void handleMove(GameMsgEntity msg) {
+		
+	}
 
 	public Map<Integer, SceneInstance> getSceneMap() {
 		return sceneMap;

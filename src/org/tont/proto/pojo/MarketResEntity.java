@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 public class MarketResEntity {
 	
+	private int itemId;
 	private int pid;
 	private int rid;
 	private int number;
@@ -11,6 +12,14 @@ public class MarketResEntity {
 	private Timestamp createTime;
 	
 	
+	public int getItemId() {
+		return itemId;
+	}
+
+	public void setItemId(int itemId) {
+		this.itemId = itemId;
+	}
+
 	public int getPid() {
 		return pid;
 	}
