@@ -1,6 +1,5 @@
 package org.tont.core;
 
-import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
@@ -108,18 +107,6 @@ public class ServerInfoGatherer {
 	
 	public long getTotalMemory() {
 		return Runtime.getRuntime().totalMemory();
-	}
-	
-	//For test
-	public static void main(String[] args) throws Exception {
-		String osName = System.getProperty("os.name");
-		System.out.println(osName);
-		InetAddress addr;
-        addr = InetAddress.getLocalHost();
-        String ip = addr.getHostAddress();
-        System.out.println(ip);
-        String vmVersion = System.getProperty("java.version");
-        System.out.println(vmVersion);
 	}
 	
 }

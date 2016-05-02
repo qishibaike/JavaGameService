@@ -10,4 +10,6 @@ public interface PlayerMapper {
 	Player findByAccount(String account);
 	Player findByNickname(String nickname);
 	Player findByPlayer(Player player);
+	Player getPlayerInfoByPid(int pid);
+	
 }

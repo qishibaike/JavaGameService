@@ -28,13 +28,6 @@ public class SceneConnectionHandler extends ChannelInboundHandlerAdapter {
 	public void channelRead(ChannelHandlerContext ctx, Object msg)
 			throws Exception {
 		GameMsgEntity msgEntity = (GameMsgEntity) msg;
-		/*if (msgEntity.getMsgCode() == (short)99) {
-			Gateway.getSessionPool().findSession(msgEntity.getPid()).getChannel().close();
-		} else if () {
-			
-		} else {
-			Gateway.getSessionPool().findSession(msgEntity.getPid()).getChannel().writeAndFlush(msgEntity);
-		}*/
 		
 		switch (msgEntity.getMsgCode()) {
 			case 99:
@@ -70,6 +63,7 @@ public class SceneConnectionHandler extends ChannelInboundHandlerAdapter {
 					broadcastMsg.setMsgCode((short) 420);
 					broadcastMsg.setPid(recPid);
 					broadcastMsg.setData(data);
+					session.getChannel().writeAndFlush(broadcastMsg);
 				}
 			}
 		} catch (InvalidProtocolBufferException e) {

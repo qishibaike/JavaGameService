@@ -25,6 +25,17 @@
         LIMIT #{startNum},#{numInPage}
     </select>
     
+    <select id="getTotalCountByName" 
+        resultType="int">
+        SELECT COUNT(*)
+        FROM MARKET_RES 
+        WHERE MARKET_RES.RID IN (
+        	SELECT RESOURCE_LIST.RID 
+        	FROM RESOURCE_LIST 
+        	WHERE RESOURCE_LIST.RES_NAME LIKE '#{resName}%'
+        ) 
+    </select>
+    
     <select id="getMarketResByRid" 
         resultType="org.tont.proto.pojo.MarketResEntity">
         SELECT * 
@@ -34,6 +45,13 @@
         LIMIT #{startNum},#{numInPage}
     </select>
     
+    <select id="getTotalCountByRid" 
+        resultType="int">
+        SELECT COUNT(*)
+        FROM MARKET_RES 
+        WHERE MARKET_RES.RID = #{resId}
+    </select>
+    
     <select id="getMarketResByPid" 
         resultType="org.tont.proto.pojo.MarketResEntity">
         SELECT * 
@@ -41,6 +59,13 @@
         WHERE MARKET_RES.PID = #{pid}
         ORDER BY #{orderByColumn} 
         LIMIT #{startNum},#{numInPage}
+    </select>
+    
+    <select id="getTotalCountByPid" 
+        resultType="int">
+        SELECT COUNT(*)
+        FROM MARKET_RES 
+        WHERE MARKET_RES.PID = #{pid}
     </select>
     
     <select id="getMarketResByType" 
@@ -54,6 +79,71 @@
         ) 
         ORDER BY #{orderByColumn} 
         LIMIT #{startNum},#{numInPage}
+    </select>
+    
+    <select id="getTotalCountByType" 
+        resultType="int">
+        SELECT COUNT(*)
+        FROM MARKET_RES 
+        WHERE MARKET_RES.RID IN (
+        	SELECT RESOURCE_LIST.RID 
+        	FROM RESOURCE_LIST 
+        	WHERE RESOURCE_LIST.TYPE = #{type}
+        ) 
+    </select>
+    
+	<parameterMap type="map" id="buyMarketRes_Param">
+		<parameter property="in_pid" jdbcType="INTEGER" mode="IN"/>
+		<parameter property="in_itemid" jdbcType="INTEGER" mode="IN"/>
+		<parameter property="in_num" jdbcType="INTEGER" mode="IN"/>
+		<parameter property="out_message" jdbcType="VARCHAR" mode="OUT"/>
+	</parameterMap>
+    
+    <select id="buyMarketRes" statementType="CALLABLE" parameterMap="buyMarketRes_Param"
+        resultType="int">
+        <![CDATA[
+	        {CALL buyMarketRes(
+	        	#{in_pid, mode=IN, jdbcType=INTEGER}, 
+	        	#{in_itemid, mode=IN, jdbcType=INTEGER}, 
+	        	#{in_num, mode=IN, jdbcType=INTEGER}, 
+	        	#{out_message, mode=OUT, jdbcType=VARCHAR})}
+        ]]>
+    </select>
+    
+    <parameterMap type="map" id="sellMarketRes_Param">
+		<parameter property="in_pid" jdbcType="INTEGER" mode="IN"/>
+		<parameter property="in_rid" jdbcType="INTEGER" mode="IN"/>
+		<parameter property="in_sale_num" jdbcType="INTEGER" mode="IN"/>
+		<parameter property="in_unit_price" jdbcType="INTEGER" mode="IN"/>
+		<parameter property="out_message" jdbcType="VARCHAR" mode="OUT"/>
+	</parameterMap>
+    
+    <select id="sellMarketRes" statementType="CALLABLE" parameterMap="sellMarketRes_Param"
+        resultType="int">
+        <![CDATA[
+	        {CALL sellMarketRes(
+	        	#{in_pid, mode=IN, jdbcType=INTEGER}, 
+	        	#{in_rid, mode=IN, jdbcType=INTEGER}, 
+	        	#{in_sale_num, mode=IN, jdbcType=INTEGER}, 
+	        	#{in_unit_price, mode=IN, jdbcType=INTEGER}, 
+	        	#{out_message, mode=OUT, jdbcType=VARCHAR})}
+		]]>
+    </select>
+    
+    <parameterMap type="map" id="cancelMarketResSale_Param">
+		<parameter property="in_pid" jdbcType="INTEGER" mode="IN"/>
+		<parameter property="in_itemid" jdbcType="INTEGER" mode="IN"/>
+		<parameter property="out_message" jdbcType="VARCHAR" mode="OUT"/>
+	</parameterMap>
+    
+    <select id="cancelMarketResSale" statementType="CALLABLE" parameterMap="cancelMarketResSale_Param"
+        resultType="int">
+        <![CDATA[
+	        {CALL cancelMarketResSale(
+	        	#{in_pid, mode=IN, jdbcType=INTEGER}, 
+	        	#{in_itemid, mode=IN, jdbcType=INTEGER}, 
+	        	#{out_message, mode=OUT, jdbcType=VARCHAR})}
+       	]]>
     </select>
     
 </mapper>

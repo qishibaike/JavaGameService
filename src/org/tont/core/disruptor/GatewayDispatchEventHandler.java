@@ -1,16 +1,22 @@
 package org.tont.core.disruptor;
 
+import java.util.Map;
+
 import org.apache.ibatis.session.SqlSession;
+import org.tont.core.cache.ServerCache;
 import org.tont.core.netty.gateway.Gateway;
 import org.tont.core.session.SessionEntity;
 import org.tont.proto.GameMsgEntity;
 import org.tont.proto.LoginRequest;
 import org.tont.proto.LoginResponse;
+import org.tont.proto.LoginResponse.LoginResponseEntity;
 import org.tont.proto.RegisterRequest;
 import org.tont.proto.RegisterResponse;
 import org.tont.proto.pojo.Player;
 import org.tont.util.MyBatisUtil;
 import org.tont.util.TokenHelper;
+
+import redis.clients.jedis.Jedis;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.lmax.disruptor.EventHandler;
@@ -21,6 +27,7 @@ public class GatewayDispatchEventHandler implements EventHandler<DispatchEvent> 
 	private final String FIND_BY_ACCOUNT = "org.tont.proto.pojo.PlayerMapper.findByAccount";
 	private final String FIND_BY_NICKNAME = "org.tont.proto.pojo.PlayerMapper.findByNickname";
 	private final String FIND_BY_PLAYER = "org.tont.proto.pojo.PlayerMapper.findByPlayer";
+	private final String GET_PLAYER_INFO_BY_PID = "org.tont.proto.pojo.PlayerMapper.getPlayerInfoByPid";
 
 	@Override
 	public void onEvent(DispatchEvent event, long sequence, boolean endOfBatch)
@@ -29,11 +36,11 @@ public class GatewayDispatchEventHandler implements EventHandler<DispatchEvent> 
 		GameMsgEntity msg = event.getMsgEntity();
 		
 		switch(msg.getMsgCode()) {
-			case 100:
+			case 100:	//登录请求
 				login(msg);
 				break;
 				
-			case 110:
+			case 110:	//注册请求
 				register(msg);
 				break;
 		}
@@ -116,6 +123,7 @@ public class GatewayDispatchEventHandler implements EventHandler<DispatchEvent> 
 		
 		boolean isSuccess = false;
 		SqlSession sqlSession = null;
+		Jedis jedis = null;
 		
 		try {
 			LoginRequest.LoginRequestEntity loginReq = LoginRequest.LoginRequestEntity.parseFrom(msg.getData());
@@ -157,22 +165,57 @@ public class GatewayDispatchEventHandler implements EventHandler<DispatchEvent> 
 			isSuccess = true;
 			message = "登录成功";
 			
-			//回复响应消息,数据从缓存或数据库提取
-			LoginResponse.LoginResponseEntity.Builder responseBuilder = LoginResponse.LoginResponseEntity.newBuilder();
-			responseBuilder.setSuccess(isSuccess);
-			responseBuilder.setMessage(message);
-			responseBuilder.setPid(result.getPid());
-			responseBuilder.setToken(token);
-			responseBuilder.setNickname(result.getNickname());
-			responseBuilder.setGold(result.getGold());
-			responseBuilder.setCurScene(result.getCurScene());
-			responseBuilder.setCurPosX(result.getCurPosX());
-			responseBuilder.setCurPosY(result.getCurPosY());
-			msg.setData(responseBuilder.build().toByteArray());
-			msg.getChannel().writeAndFlush(msg);
-			
 			//检查缓存中是否有玩家数据，如果没有，则从数据库加载到缓存中
-			//Jedis jedis = ServerCache.getJedis();
+			jedis = ServerCache.getJedis();
+			
+			if (jedis == null) {
+				return;
+			}
+			
+			Map<String, String> map = jedis.hgetAll("PlayerInfo:" + result.getPid());
+			if (map.size() > 0) {
+				//回复响应消息,数据从缓存提取
+				LoginResponseEntity.Builder responseBuilder = LoginResponse.LoginResponseEntity.newBuilder();
+				responseBuilder.setSuccess(isSuccess);
+				responseBuilder.setMessage(message);
+				responseBuilder.setPid(result.getPid());
+				responseBuilder.setToken(token);
+				responseBuilder.setNickname(map.get("NICKNAME"));
+				responseBuilder.setGold(Integer.parseInt(map.get("GOLD")));
+				responseBuilder.setCurScene(Integer.parseInt(map.get("CUR_SCENE")));
+				responseBuilder.setCurPosX(Integer.parseInt(map.get("CUR_POS_X")));
+				responseBuilder.setCurPosY(Integer.parseInt(map.get("CUR_POS_Y")));
+				responseBuilder.setHp(Integer.parseInt(map.get("HP")));
+				msg.setData(responseBuilder.build().toByteArray());
+				msg.getChannel().writeAndFlush(msg);
+				
+			} else {
+				//回复响应消息,数据从数据库提取,并将其载入缓存
+				Player info = sqlSession.selectOne(GET_PLAYER_INFO_BY_PID,result.getPid());
+				
+				LoginResponseEntity.Builder responseBuilder = LoginResponse.LoginResponseEntity.newBuilder();
+				responseBuilder.setSuccess(isSuccess);
+				responseBuilder.setMessage(message);
+				responseBuilder.setPid(result.getPid());
+				responseBuilder.setToken(token);
+				responseBuilder.setNickname(info.getNickname());
+				responseBuilder.setGold(info.getGold());
+				responseBuilder.setCurScene(info.getCurScene());
+				responseBuilder.setCurPosX(info.getCurPosX());
+				responseBuilder.setCurPosY(info.getCurPosY());
+				responseBuilder.setHp(info.getHp());
+				msg.setData(responseBuilder.build().toByteArray());
+				msg.getChannel().writeAndFlush(msg);
+				
+				map.put("NICKNAME", info.getNickname());
+				map.put("GOLD", info.getGold()+"");
+				map.put("CUR_SCENE", info.getCurScene() + "");
+				map.put("CUR_POS_X", info.getCurPosX() + "");
+				map.put("CUR_POS_Y", info.getCurPosY() + "");
+				map.put("HP", info.getHp() + "");
+				
+				jedis.hmset("PlayerInfo:" + result.getPid(), map);
+			}
 			
 			
 		} catch (InvalidProtocolBufferException e) {
@@ -180,6 +223,10 @@ public class GatewayDispatchEventHandler implements EventHandler<DispatchEvent> 
 		} finally {
 			if (sqlSession != null) {
 				sqlSession.close();
+			}
+			
+			if (jedis != null) {
+				jedis.close();
 			}
 		}
 	}

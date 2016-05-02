@@ -3,7 +3,6 @@ package org.tont.core.netty.market;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import org.tont.core.netty.NettyServer;
 import org.tont.core.netty.ServerChannelManager;
 import org.tont.proto.GameMsgEntity;
 import org.tont.util.ConstantUtil;
@@ -27,12 +26,11 @@ public class MarketServerHandler extends ChannelInboundHandlerAdapter {
 		GameMsgEntity msgEntity = (GameMsgEntity) msg;
 		msgEntity.setChannel(ctx.channel());
 		switch (msgEntity.getMsgCode()) {
-			case 300:
-				NettyServer.Gatherer().handleRequest();
-				ctx.writeAndFlush(msgEntity);
-				break;
+		
 			default:
+				MarketServer.Dispatcher().onData(msgEntity);
 				break;
+				
 		}
 	}
 	

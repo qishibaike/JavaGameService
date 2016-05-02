@@ -12,10 +12,12 @@ import org.tont.proto.GameMsgEntity;
 import org.tont.proto.PlayerOwnedRes;
 import org.tont.proto.PlayerOwnedShip;
 import org.tont.proto.pojo.PlayerResource;
+import org.tont.proto.pojo.Ship;
 import org.tont.util.ConstantUtil;
 import org.tont.util.MyBatisUtil;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.lmax.disruptor.EventHandler;
@@ -24,6 +26,7 @@ public class SceneDispatchEventHandler  implements EventHandler<DispatchEvent> {
 
 	private final String GATEWAY = ConstantUtil.GATEWAY;
 	private final String GET_ALL_BY_PID = "org.tont.proto.pojo.PlayerResourceMapper.getAllByPid";
+	private final String GET_SHIPS_BY_PID = "org.tont.proto.pojo.ShipMapper.getShipsByPid";
 	
 	@Override
 	public void onEvent(DispatchEvent event, long sequence, boolean endOfBatch)
@@ -113,12 +116,46 @@ public class SceneDispatchEventHandler  implements EventHandler<DispatchEvent> {
 	 * @param msg
 	 */
 	public void queryOwnShips(GameMsgEntity msg) {
+		
 		Jedis jedis = ServerCache.getJedis();
+		SqlSession sqlSession = MyBatisUtil.getSqlSession();
+		
 		try {
+			
 			String key = "OwnShip" + msg.getPid();
 			List<byte[]> shipList = jedis.lrange(key.getBytes("UTF-8"), 0, -1);
+			
 			if (shipList == null) {
+				
 				//缓存中没有，从数据库加载
+				List<Ship> list = sqlSession.selectList(GET_SHIPS_BY_PID, msg.getPid());
+				PlayerOwnedShip.Ships.Builder builder = PlayerOwnedShip.Ships.newBuilder();
+				PlayerOwnedShip.ShipEntity.Builder shipBuilder = PlayerOwnedShip.ShipEntity.newBuilder();
+				
+				for(int i = 0 ; i < list.size() ; i++) {
+					
+					Ship item = list.get(i);
+					
+					shipBuilder.setShipId(item.getShipId());
+					shipBuilder.setLevel(item.getLevel());
+					shipBuilder.setExp(item.getExp());
+					shipBuilder.setDetail(item.getDetail());
+					
+					builder.setShip(i, shipBuilder.build());
+				}
+				
+				PlayerOwnedShip.Ships ships = builder.build();
+				msg.setData(ships.toByteArray());
+				ServerChannelManager.getChannel(GATEWAY).writeAndFlush(msg);
+				
+				//将数据载入缓存，加速数据的访问
+				Transaction tx = jedis.multi();
+				jedis.del(key.getBytes("UTF-8"));
+				for (int i = 0 ; i < ships.getShipCount() ; i ++ ) {
+					jedis.lpush(key.getBytes("UTF-8"), ships.getShip(i).toByteArray());
+				}
+				tx.exec();
+				
 			} else {
 				//从缓存中找到数据，经由网关返回结果给客户端
 				PlayerOwnedShip.Ships.Builder builder = PlayerOwnedShip.Ships.newBuilder();

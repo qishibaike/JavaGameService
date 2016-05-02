@@ -1,0 +1,68 @@
+// [START declaration]
+syntax = "proto3";
+package proto;
+// [END declaration]
+
+// [START java_declaration]
+option java_package = "org.tont.proto";
+option java_outer_classname = "MarketTrade";
+// [END java_declaration]
+
+// [START csharp_declaration]
+option csharp_namespace = "Google.Protobuf.ToNT.MarketTrade";
+// [END csharp_declaration]
+
+// []
+// [START messages : code ]
+message ResourceItem {
+	int32 itemId = 1;
+	int32 sellerId = 2;
+	int32 rid = 3;
+	int32 number = 4;
+	int32 unit_price = 5;
+	int64 createTime = 6;
+}
+
+// [orderBy 表示排序的列]
+message QueryItemsRequest {
+	int32 queryBy = 1;
+	string queryKey = 2;
+	int32 page = 3;
+	int32 orderBy = 4;
+}
+
+message QueryItemsResponse {
+	repeated ResourceItem result = 1;
+	int32 totalPageCount = 2;
+	int32 page = 3;
+}
+
+message BuyRequest {
+	int32 pid = 1;
+	int32 itemid = 2;
+	int32 num = 3;
+	int32 seq = 4;
+}
+
+message SellRequest {
+	int32 pid = 1;
+	int32 rid = 2;
+	int32 num = 3;
+	int32 unit_price = 4;
+	int32 seq = 5;
+}
+
+message CancelSaleRequest {
+	int32 pid = 1;
+	int32 itemid = 2;
+	int32 seq = 3;
+}
+
+message TradeResultResponse {
+	int32 type = 1;
+	int32 isSuccess = 2;
+	string resultMsg = 3;
+	int32 seq = 4;
+}
+
+// [END messages]

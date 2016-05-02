@@ -15,7 +15,7 @@ option csharp_namespace = "Google.Protobuf.ToNT.PlayerOwnedShip";
 
 // [START messages]
 message ShipEntity {
-	string shipId = 1;
+	int32 shipId = 1;
 	string shipName = 2;
 	string description = 3;
 	int32 level = 4;

@@ -10,7 +10,7 @@ public class MarketResEntity {
 	private int number;
 	private int unit_Price;
 	private Timestamp createTime;
-	
+
 	
 	public int getItemId() {
 		return itemId;
@@ -58,6 +58,16 @@ public class MarketResEntity {
 	
 	public void setCreateTime(Timestamp createTime) {
 		this.createTime = createTime;
+	}
+	
+	@Override
+	public String toString() {
+		String print = "{ itemid = " + this.itemId + " : "
+				+ "pid = " + this.pid + " : "
+				+ "rid = " + this.rid + " : "
+				+ "number = " + this.number + " : "
+				+ "unit_Price = " + this.unit_Price + " } ";
+		return print;
 	}
 	
 }

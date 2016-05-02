@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.tont.proto.GameMsgEntity;
+import org.tont.proto.MoveBroadcast.MoveEntity;
 import org.tont.proto.MoveBroadcast.SwitchScene;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -13,13 +14,13 @@ public class SceneInstanceMaster {
 	private Map<Integer, SceneInstance> sceneMap = new HashMap<Integer,SceneInstance>();
 	
 	public void initSceneNode() {
-		sceneMap.put(1, new SceneInstance(1, 1, 0, 0, null));
+		sceneMap.put(1, new SceneInstance(1, 1, 0, 0, new SceneNodeBorder(-500, 500, 500, -500)));
 	}
 	
 	
 	/****
 	 * 处理玩家进入场景、退出场景或者切换场景
-	 * msgCode : 411 , 412
+	 * msgCode : 411 , 412 , 413
 	 * @param msg
 	 */
 	public void switchScene(GameMsgEntity msg) {
@@ -58,6 +59,18 @@ public class SceneInstanceMaster {
 	
 	public void handleMove(GameMsgEntity msg) {
 		
+		MoveEntity moveEntity = null;
+		
+		try {
+			moveEntity = MoveEntity.parseFrom(msg.getData());
+		} catch (InvalidProtocolBufferException e) {
+			//
+		}
+		
+		int sid = moveEntity.getSceneId();
+		if (sid >= 0) {
+			sceneMap.get(sid).handleMove(msg, moveEntity);
+		}
 	}
 
 	public Map<Integer, SceneInstance> getSceneMap() {

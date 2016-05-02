@@ -3,7 +3,6 @@ package org.tont.core.netty.scene;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import org.tont.core.netty.NettyServer;
 import org.tont.core.netty.ServerChannelManager;
 import org.tont.proto.GameMsgEntity;
 import org.tont.util.ConstantUtil;
@@ -29,18 +28,13 @@ public class SceneServerHandler extends ChannelInboundHandlerAdapter {
 		switch (msgEntity.getMsgCode()) {
 		
 			case 410:
-				
+				SceneServer.sceneMaster.handleMove(msgEntity);
 				break;
 				
 			case 411:
-				break;
-				
 			case 412:
-				break;
-				
-			case 500:
-				NettyServer.Gatherer().handleRequest();
-				ctx.writeAndFlush(msgEntity);
+			case 413:
+				SceneServer.sceneMaster.switchScene(msgEntity);
 				break;
 				
 			default:

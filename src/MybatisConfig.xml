@@ -15,8 +15,10 @@
 	</environments>
 	
 	<mappers>
-        <mapper resource="org/tont/proto/pojo/playerMapper.xml"/>
-        <mapper resource="org/tont/proto/pojo/playerResourceMapper.xml"/>
+        <mapper resource="org/tont/proto/pojo/PlayerMapper.xml"/>
+        <mapper resource="org/tont/proto/pojo/PlayerResourceMapper.xml"/>
+        <mapper resource="org/tont/proto/pojo/MarketResEntityMapper.xml"/>
+        <mapper resource="org/tont/proto/pojo/ShipMapper.xml"/>
     </mappers>
     
 </configuration>

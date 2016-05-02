@@ -1,27 +1,23 @@
-package org.tont.core.netty.scene;
+package org.tont.core.netty.market;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 
-import org.tont.core.cache.ServerCache;
+import org.tont.core.disruptor.MarketDispatchEventHandler;
 import org.tont.core.disruptor.MessageDispatcher;
-import org.tont.core.disruptor.SceneDispatchEventHandler;
 import org.tont.core.netty.NettyServer;
-import org.tont.core.scene.SceneInstanceMaster;
 import org.tont.exceptions.ConfigParseException;
 
 import com.lmax.disruptor.SleepingWaitStrategy;
 
-public class SceneServer extends NettyServer {
+public class MarketServer extends NettyServer {
 	
 	private static MessageDispatcher dispatcher = new MessageDispatcher(4096, new SleepingWaitStrategy());	//MessageDispatcher负责分发登录注册消息至处理队列
-	public static SceneInstanceMaster sceneMaster = new SceneInstanceMaster();
-	
-	public SceneServer(String configPath,
+
+	public MarketServer(String configPath,
 			ChannelInitializer<SocketChannel> initializer)
 			throws ConfigParseException {
 		super(configPath, initializer);
-		ServerCache.initPool();
 	}
 	
 	public static MessageDispatcher Dispatcher() {
@@ -30,7 +26,7 @@ public class SceneServer extends NettyServer {
 	
 	@Override
 	public void run() {
-		dispatcher.init(new SceneDispatchEventHandler());
+		dispatcher.init(new MarketDispatchEventHandler());
 		super.run();
 	}
 

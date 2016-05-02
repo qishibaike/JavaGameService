@@ -13,14 +13,9 @@ public final class PlayerOwnedShip {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string shipId = 1;</code>
+     * <code>optional int32 shipId = 1;</code>
      */
-    java.lang.String getShipId();
-    /**
-     * <code>optional string shipId = 1;</code>
-     */
-    com.google.protobuf.ByteString
-        getShipIdBytes();
+    int getShipId();
 
     /**
      * <code>optional string shipName = 2;</code>
@@ -78,7 +73,7 @@ public final class PlayerOwnedShip {
       super(builder);
     }
     private ShipEntity() {
-      shipId_ = "";
+      shipId_ = 0;
       shipName_ = "";
       description_ = "";
       level_ = 0;
@@ -110,10 +105,9 @@ public final class PlayerOwnedShip {
               }
               break;
             }
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
+            case 8: {
 
-              shipId_ = s;
+              shipId_ = input.readInt32();
               break;
             }
             case 18: {
@@ -169,37 +163,12 @@ public final class PlayerOwnedShip {
     }
 
     public static final int SHIPID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object shipId_;
+    private int shipId_;
     /**
-     * <code>optional string shipId = 1;</code>
+     * <code>optional int32 shipId = 1;</code>
      */
-    public java.lang.String getShipId() {
-      java.lang.Object ref = shipId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        shipId_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>optional string shipId = 1;</code>
-     */
-    public com.google.protobuf.ByteString
-        getShipIdBytes() {
-      java.lang.Object ref = shipId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        shipId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getShipId() {
+      return shipId_;
     }
 
     public static final int SHIPNAME_FIELD_NUMBER = 2;
@@ -334,8 +303,8 @@ public final class PlayerOwnedShip {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getShipIdBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, shipId_);
+      if (shipId_ != 0) {
+        output.writeInt32(1, shipId_);
       }
       if (!getShipNameBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessage.writeString(output, 2, shipName_);
@@ -359,8 +328,9 @@ public final class PlayerOwnedShip {
       if (size != -1) return size;
 
       size = 0;
-      if (!getShipIdBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, shipId_);
+      if (shipId_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, shipId_);
       }
       if (!getShipNameBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(2, shipName_);
@@ -494,7 +464,7 @@ public final class PlayerOwnedShip {
       }
       public Builder clear() {
         super.clear();
-        shipId_ = "";
+        shipId_ = 0;
 
         shipName_ = "";
 
@@ -549,9 +519,8 @@ public final class PlayerOwnedShip {
 
       public Builder mergeFrom(org.tont.proto.PlayerOwnedShip.ShipEntity other) {
         if (other == org.tont.proto.PlayerOwnedShip.ShipEntity.getDefaultInstance()) return this;
-        if (!other.getShipId().isEmpty()) {
-          shipId_ = other.shipId_;
-          onChanged();
+        if (other.getShipId() != 0) {
+          setShipId(other.getShipId());
         }
         if (!other.getShipName().isEmpty()) {
           shipName_ = other.shipName_;
@@ -597,71 +566,28 @@ public final class PlayerOwnedShip {
         return this;
       }
 
-      private java.lang.Object shipId_ = "";
+      private int shipId_ ;
       /**
-       * <code>optional string shipId = 1;</code>
+       * <code>optional int32 shipId = 1;</code>
        */
-      public java.lang.String getShipId() {
-        java.lang.Object ref = shipId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          shipId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
+      public int getShipId() {
+        return shipId_;
       }
       /**
-       * <code>optional string shipId = 1;</code>
+       * <code>optional int32 shipId = 1;</code>
        */
-      public com.google.protobuf.ByteString
-          getShipIdBytes() {
-        java.lang.Object ref = shipId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          shipId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string shipId = 1;</code>
-       */
-      public Builder setShipId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      public Builder setShipId(int value) {
+        
         shipId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string shipId = 1;</code>
+       * <code>optional int32 shipId = 1;</code>
        */
       public Builder clearShipId() {
         
-        shipId_ = getDefaultInstance().getShipId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string shipId = 1;</code>
-       */
-      public Builder setShipIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        shipId_ = value;
+        shipId_ = 0;
         onChanged();
         return this;
       }
@@ -1680,7 +1606,7 @@ public final class PlayerOwnedShip {
   static {
     java.lang.String[] descriptorData = {
       "\n\020playerShip.proto\022\005proto\"o\n\nShipEntity\022" +
-      "\016\n\006shipId\030\001 \001(\t\022\020\n\010shipName\030\002 \001(\t\022\023\n\013des" +
+      "\016\n\006shipId\030\001 \001(\005\022\020\n\010shipName\030\002 \001(\t\022\023\n\013des" +
       "cription\030\003 \001(\t\022\r\n\005level\030\004 \001(\005\022\013\n\003exp\030\005 \001" +
       "(\005\022\016\n\006detail\030\006 \001(\t\"(\n\005Ships\022\037\n\004ship\030\001 \003(" +
       "\0132\021.proto.ShipEntityBH\n\016org.tont.protoB\017" +

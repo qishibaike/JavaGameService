@@ -12,7 +12,7 @@
     </update>
     
     <update id="updatePlayer" parameterType="org.tont.proto.pojo.Player">
-        UPDATE PLAYERS SET GOLD=#{gold},CUR_SCENE=#{cur_Scene},CUR_POS_X=#{cur_Pos_X},CUR_POS_Y=#{cur_Pos_Y},HP=#{hp} WHERE PID=#{pid}
+        UPDATE PLAYER_INFO SET GOLD=#{gold},CUR_SCENE=#{cur_Scene},CUR_POS_X=#{cur_Pos_X},CUR_POS_Y=#{cur_Pos_Y},HP=#{hp} WHERE PID=#{pid}
     </update>
     
     <select id="findByPid" parameterType="int" 
@@ -33,6 +33,11 @@
     <select id="findByPlayer" parameterType="org.tont.proto.pojo.Player" 
         resultType="org.tont.proto.pojo.Player">
         SELECT * FROM PLAYERS WHERE ACCOUNT=#{account} AND PASSWORD=#{password}
+    </select>
+    
+    <select id="getPlayerInfoByPid" parameterType="int"
+        resultType="org.tont.proto.pojo.Player">
+        SELECT * FROM PLAYER_INFO WHERE PID=#{pid}
     </select>
     
 </mapper>

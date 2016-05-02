@@ -17,7 +17,7 @@ public class GlobalTime implements Runnable{
 		while (!Thread.interrupted()) {
 			try {
 				GlobalTime.curTime = System.currentTimeMillis() / 1000;
-				Thread.sleep(1000);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				//
 			}

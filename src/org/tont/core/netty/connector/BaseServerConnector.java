@@ -18,6 +18,7 @@ public class BaseServerConnector implements Runnable {
 	private boolean closed = false;
 	private int port;
 	private String host;
+	private long period = 8000L;
 	private final ChannelInboundHandlerAdapter handler;
 	private Bootstrap boot;
 	private EventLoopGroup group;
@@ -50,22 +51,18 @@ public class BaseServerConnector implements Runnable {
 		} finally {
 			group.shutdownGracefully();
 			if (!closed) {
-				Thread.sleep(8000);
+				Thread.sleep(period);
 				BaseServerConnector con = new BaseServerConnector(port,host,handler);
 				new Thread(con).start();
 			}
 		}
 	}
 	
-	public void tryConnect() {
+	public void tryConnect() throws InterruptedException {
 		System.out.println("tryConnect"+port);
 		ChannelFuture cFuture = boot.connect(host, port);
-		try {
-			cFuture.sync();
-			cFuture.channel().closeFuture().sync();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		cFuture.sync();
+		cFuture.channel().closeFuture().sync();
 	}
 
 	@Override

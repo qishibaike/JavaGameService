@@ -141,18 +141,11 @@ public class SceneInstance implements InOrOutSceneValidate {
 	/**
 	 * 处理普通的移动信息
 	 **/
-	public void handleMove(GameMsgEntity msg) {
+	public void handleMove(GameMsgEntity msg, MoveEntity moveEntity) {
 		
-		MoveEntity moveEntity = null;
-		try {
-			moveEntity = MoveEntity.parseFrom(msg.getData());
-			
-			int nodeId = playerNodeMap.get(msg.getPid());
-			nodes[nodeId].handleMove(msg, moveEntity);
-			
-		} catch (InvalidProtocolBufferException e) {
-			//
-		}
+		int nodeId = playerNodeMap.get(msg.getPid());
+		nodes[nodeId].handleMove(msg, moveEntity);
+		
 	}
 	
 	

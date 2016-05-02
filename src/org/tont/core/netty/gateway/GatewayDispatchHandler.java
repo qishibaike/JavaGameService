@@ -58,10 +58,7 @@ public class GatewayDispatchHandler extends ChannelInboundHandlerAdapter {
 		//后期将抽离成XML文档进行映射
 		switch (msgEntity.getMsgCode()) {
 		
-			case 100:	//注册登录等直接由网关处理的请求
-				Gateway.Dispatcher().onData(msgEntity);
-				break;
-				
+			case 100:
 			case 110:	//注册登录等直接由网关处理的请求
 				Gateway.Dispatcher().onData(msgEntity);
 				break;
@@ -75,28 +72,25 @@ public class GatewayDispatchHandler extends ChannelInboundHandlerAdapter {
 				ServerChannelManager.getChannel(BATTLE).writeAndFlush(msgEntity);
 				break;
 				
-			case 300:	//市场交易数据
+			case 310:	//市场交易数据
+			case 330:
+			case 340:
+			case 350:
 				Gateway.Gatherer().handleRequest();
 				ServerChannelManager.getChannel(MARKET).writeAndFlush(msgEntity);
 				break;
 				
-			case 400:
 			case 410:
 			case 411:
 			case 412:
-			case 420:
+			case 413:
 				//场景数据
 				Gateway.Gatherer().handleRequest();
 				ServerChannelManager.getChannel(SCENE).writeAndFlush(msgEntity);
 				break;
 				
-			case 500:
-				//角色数据
-				Gateway.Gatherer().handleRequest();
-				ServerChannelManager.getChannel(SCENE).writeAndFlush(msgEntity);
-				break;
-				
 			case 540:
+			case 550:
 				//角色数据
 				Gateway.Gatherer().handleRequest();
 				System.out.println(msgEntity.getPid());
